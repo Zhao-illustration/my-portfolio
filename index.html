@@ -1,19 +1,73 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2299">
-  <style type="text/css">
-    p.p2 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
-    span.s1 {font-kerning: none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mellissa Zhao Portfolio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: white;
+      color: black;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    p.intro {
+      font-size: 18px;
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .art-item p {
+      margin-top: 8px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>Mellissa Zhao</b></span></h1>
-<p class="p2"><span class="s1">Illustration Portfoli</span></p>
-<p class="p2"><span class="s1">My art lives here, it's a bit strange</span></p>
+  <h1>Mellissa Zhao</h1>
+  <p class="intro">
+    Illustrator and visual artist. A selection of my recent works.
+  </p>
+
+  <div class="gallery">
+    <div class="art-item">
+      <img src="images/art1.jpg" alt="Artwork 1">
+      <p>Artwork Title 1</p>
+    </div>
+
+    <div class="art-item">
+      <img src="images/art2.jpg" alt="Artwork 2">
+      <p>Artwork Title 2</p>
+    </div>
+
+    <div class="art-item">
+      <img src="images/art3.jpg" alt="Artwork 3">
+      <p>Artwork Title 3</p>
+    </div>
+
+    <div class="art-item">
+      <img src="images/art4.jpg" alt="Artwork 4">
+      <p>Artwork Title 4</p>
+    </div>
+  </div>
 </body>
 </html>
