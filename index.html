@@ -4,69 +4,175 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mellissa Zhao Portfolio</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 40px;
-      background: white;
-      color: black;
+      padding: 0;
+      background: #ffffff;
+      color: #111111;
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 28px 90px;
     }
 
     h1 {
-      font-size: 40px;
-      margin-bottom: 10px;
+      text-align: center;
+      font-size: 58px;
+      font-weight: 300;
+      margin: 0 0 34px 0;
+      letter-spacing: 0.3px;
     }
 
-    p.intro {
-      font-size: 18px;
-      margin-bottom: 40px;
-      max-width: 600px;
+    .intro {
+      max-width: 980px;
+      margin: 0 auto 90px auto;
+      text-align: center;
+      color: #4a4a4a;
+      font-size: 19px;
+      line-height: 1.9;
+    }
+
+    .intro p {
+      margin: 0 0 22px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 14px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #6a6a6a;
+      margin: 0 0 54px 0;
     }
 
     .gallery {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      gap: 64px 30px;
+      max-width: 980px;
+      margin: 0 auto;
     }
 
-    .gallery img {
-      width: 100%;
-      height: auto;
-      display: block;
+    .art-item {
+      text-align: center;
     }
+
+    .art-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
     .art-item p {
-      margin-top: 8px;
-      font-size: 14px;
+      margin: 16px 0 0 0;
+      font-size: 19px;
+      color: #222222;
+      font-weight: 400;
+    }
+
+    .contact {
+      margin-top: 88px;
+      text-align: center;
+    }
+
+    .contact p {
+      font-size: 18px;
+      color: #333333;
+      margin: 16px 0;
+    }
+
+    a {
+      color: #222222;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        padding: 24px 18px 70px;
+      }
+
+      h1 {
+        font-size: 40px;
+        margin-bottom: 24px;
+      }
+
+      .intro {
+        font-size: 16px;
+        margin-bottom: 60px;
+      }
+
+      .section-title {
+        font-size: 12px;
+        letter-spacing: 4px;
+        margin-bottom: 36px;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+        gap: 42px;
+      }
+
+      .art-item p,
+      .contact p {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Mellissa Zhao</h1>
-  <p class="intro">
-    Illustrator and visual artist. A selection of my recent works.
-  </p>
+  <div class="container">
+    <h1>Mellissa Zhao</h1>
 
-  <div class="gallery">
-    <div class="art-item">
-      <img src="images/art1.JPG" alt="Artwork 1">
-      <p>Artwork Title 1</p>
+    <div class="intro">
+      <p>
+        Illustrator and visual artist. My work explores dream, tension, surreal narrative,
+        and emotional ambiguity through detailed imagery.
+      </p>
+      <p>
+        This portfolio presents a selection of recent works and ongoing projects.
+      </p>
     </div>
 
-    <div class="art-item">
-      <img src="images/art2.JPG" alt="Artwork 2">
-      <p>Artwork Title 2</p>
+    <div class="section-title">Selected Works</div>
+
+    <div class="gallery">
+      <div class="art-item">
+        <img src="images/art1.jpg" alt="Chaos Dream">
+        <p>Chaos Dream</p>
+      </div>
+
+      <div class="art-item">
+        <img src="images/art2.jpg" alt="Feed the Fish">
+        <p>Feed the Fish</p>
+      </div>
+
+      <div class="art-item">
+        <img src="images/art3.jpg" alt="Outsider">
+        <p>Outsider</p>
+      </div>
+
+      <div class="art-item">
+        <img src="images/art4.jpg" alt="Rescue and Silence">
+        <p>Rescue and Silence</p>
+      </div>
     </div>
 
-    <div class="art-item">
-      <img src="images/art3.JPG" alt="Artwork 3">
-      <p>Artwork Title 3</p>
-    </div>
-
-    <div class="art-item">
-      <img src="images/art4.JPG" alt="Artwork 4">
-      <p>Artwork Title 4</p>
+    <div class="contact">
+      <div class="section-title">Contact</div>
+      <p>Email: yourname@email.com</p>
+      <p>
+        Instagram:
+        <a href="https://instagram.com/yourinstagram" target="_blank">@yourinstagram</a>
+      </p>
     </div>
   </div>
 </body>
