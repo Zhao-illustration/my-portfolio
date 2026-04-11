@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chaos Dream</title>
+
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* 页面水平居中 */
+    align-items: center;     /* 页面垂直居中 */
+    background-color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* 外层容器：图片+文字一行 */
+  .art-wrapper {
+    display: flex;
+    gap: 10px;           /* 图片和文字间距 */
+    align-items: flex-end; /* 文字底部对齐图片 */
+  }
+
+  /* 图片容器 */
+  .art-container {
+    max-width: 600px;
+    max-height: 600px;
+  }
+
+  .art-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  /* 文字列 */
+  .art-info {
+    max-width: 150px;
+    text-align: left;
+  }
+
+  .art-info .title {
+    font-size: 14px;
+    margin: 10;
+  }
+
+  .art-info .description {
+    font-size: 12px;
+    margin: 6px 0 0 0;
+  }
+
+  .art-info .year {
+    font-size: 10px;
+    margin: 6px 0 0 0;
+    opacity: 0.6;
+  }
+
+  /* 响应式 */
+  @media (max-width: 600px) {
+    .art-wrapper {
+      flex-direction: column; /* 小屏幕文字放下方 */
+      align-items: center;
+    }
+    .art-info {
+      max-width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="art-wrapper">
+    <div class="art-container">
+      <img src="images/art1.JPG" alt="Chaos Dream">
+    </div>
+
+    <div class="art-info">
+      <p class="title">Chaos Dream</p>
+      <p class="description">A dreamlike scene of a young woman surrounded by floating clocks and waves.</p>
+      <p class="year">2021</p>
+    </div>
+  </div>
+</body>
+</html>

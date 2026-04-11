@@ -1,24 +1,34 @@
-<!DOCTYPE html>
+<!DOCTYPE html>       
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mellissa Zhao Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+  <title>Mellissa Zhao Portfolio</title> 
+
+
+
 
   <style>
-    body {
+
+  .art-item p {
+  display: none;
+}
+    
+    body {      /*网页背景和字体*/
       margin: 0;
       padding: 0;
       background: #ffffff;
       color: #111111;
       font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    } 
+
+    .container {     
+      max-width: 1100px;  /*容器最宽 1100 像素*/
+      margin: 0 auto; /*居中*/
+      padding: 28px 28px 0px;  
+      
     }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 28px 90px;
-    }
 
     h1 {
       text-align: center;
@@ -31,6 +41,7 @@
     .intro {
       max-width: 980px;
       margin: 0 auto 90px auto;
+      margin-bottom: 20px;
       text-align: center;
       color: #4a4a4a;
       font-size: 19px;
@@ -38,34 +49,35 @@
     }
 
     .intro p {
-      margin: 0 0 22px 0;
+       margin-bottom: 30px;
     }
 
     .section-title {
       text-align: center;
-      font-size: 14px;
+      font-size: 1px;
       letter-spacing: 6px;
       text-transform: uppercase;
       color: #6a6a6a;
       margin: 0 0 54px 0;
     }
-
-    .gallery {
+ .gallery {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 64px 30px;
-      max-width: 980px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 50px 50px;
+      max-width: 1200px;
       margin: 0 auto;
     }
-
+/*图片排成网格（像棋盘）*/
     .art-item {
       text-align: center;
     }
 
-    .art-item img {
-  width: 100%;
-  height: auto;
+   .art-item img {
+  width: 100%;        /* 填满列宽 */
+  max-height: 320px;  /* 最大高度一样 */
+  height: auto;       /* 保持原始比例 */
   display: block;
+  object-fit: contain; /* 不裁切 */
 }
 
     .art-item p {
@@ -95,92 +107,141 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 800px) {
-      .container {
-        padding: 24px 18px 70px;
-      }
-
-      h1 {
-        font-size: 40px;
-        margin-bottom: 24px;
-      }
-
-      .intro {
-        font-size: 16px;
-        margin-bottom: 60px;
-      }
-
-      .section-title {
-        font-size: 12px;
-        letter-spacing: 4px;
-        margin-bottom: 36px;
-      }
-
-      .gallery {
-        grid-template-columns: 1fr;
-        gap: 42px;
-      }
-
-      .art-item p,
-      .contact p {
-        font-size: 16px;
-      }
-    }
+ @media (max-width: 800px) {
+  .container { padding: 24px 18px 70px; }
+  h1 { font-size: 40px; margin-bottom: 24px; }
+  .intro { font-size: 16px; margin-bottom: 60px; }
+  .section-title { font-size: 12px; letter-spacing: 4px; margin-bottom: 36px; }
+  .gallery { grid-template-columns: 1fr; gap: 40px 20px; } 
+  .art-item p, .contact p { font-size: 16px; }
+}
   </style>
+
+
+
+
 </head>
 <body>
   <div class="container">
-    <h1>Mellissa Zhao</h1>
+    <header style="text-align:center; margin-bottom:60px;">
+  <h1 style="font-size:72px;">Mellissa Zhao</h1>
+ 
 
     <div class="intro">
       <p>
         Illustrator and visual artist. My work explores dream, tension, surreal narrative,
-        and emotional ambiguity through detailed imagery.
+        and emotional ambiguity through detailed imagery. This portfolio presents a selection of recent works and ongoing projects.
       </p>
-      <p>
-        This portfolio presents a selection of recent works and ongoing projects.
-      </p>
+     
     </div>
 
     <div class="section-title">Selected Works</div>
 
-    <div class="gallery">
-      <div class="art-item">
-        <img src="images/art1.JPG" alt="Chaos Dream">
-        <p>Chaos Dream</p>
-      </div>
-
-      <div class="art-item">
-        <img src="images/art2.JPG" alt="Feed the Fish">
-        <p>Feed the Fish</p>
-      </div>
-
-      <div class="art-item">
-        <img src="images/art3.JPG" alt="Outsider">
-        <p>Outsider</p>
-      </div>
-
-      <div class="art-item">
-        <img src="images/art4.JPG" alt="Rescue and Silence">
-        <p>Rescue & Silence</p>
-      </div>
-    </div>
 
 
-     <div class="art-item">
-        <img src="images/art5.JPG" alt="Rescue and Silence">
-        <p>Rescue & Silence</p>
-      </div>
-    </div>
+   <div class="gallery">
+  
+    <div class="art-item">
+  <a href="art1-detail.html">
+    <img src="images/art1.JPG" alt="Chaos Dream">
+  </a>
+  <p>Chaos Dream</p>
+</div>
 
-    <div class="contact">
-      <div class="section-title">Contact</div>
-      <p>Email: mengdian1999@outlook.com</p>
-      <p>
-        Instagram:
-        <a href="https://instagram.com/yourinstagram" target="_blank">@yourinstagram</a>
-      </p>
-    </div>
+
+  <div class="art-item">
+    <img src="images/art2.JPG" alt="Feed the Fish">
+    <p>Feed the Fish</p>
+  </div>
+
+
+  <div class="art-item">
+    <img src="images/art3.JPG" alt="Outsider">
+    <p>Outsider</p>
+  </div>
+
+
+  <div class="art-item">
+    <img src="images/art4.JPG" alt="Rescue & Silence">
+    <p>Rescue & Silence</p>
+  </div>
+
+  <div class="art-item">
+    <img src="images/art5.JPG" alt="荒谬的西部">
+    <p>荒谬的西部</p>
+  </div>
+
+
+  <div class="art-item">
+    <img src="images/art6.JPG" alt="Feed the Fish">
+  </div>
+  <div class="art-item">
+    <img src="images/art7.JPG" alt="Outsider">
+  </div>
+  <div class="art-item">
+    <img src="images/art8.JPG" alt="Rescue & Silence">
+  </div>
+  <div class="art-item">
+    <img src="images/art9.JPG" alt="荒谬的西部">
+  </div>
+  <div class="art-item">
+    <img src="images/art10.JPG" alt="Feed the Fish">
+  </div>
+  <div class="art-item">
+    <img src="images/art11.JPG" alt="Outsider">
+  </div>
+  <div class="art-item">
+    <img src="images/art12.JPG" alt="Rescue & Silence">
+  </div>
+  <div class="art-item">
+    <img src="images/art13.JPG" alt="荒谬的西部">
+  </div>
+  <div class="art-item">
+    <img src="images/art14.JPG" alt="Outsider">
+  </div>
+  <div class="art-item">
+    <img src="images/art15.JPG" alt="Rescue & Silence">
+  </div>
+  <div class="art-item">
+    <img src="images/art16.JPG" alt="荒谬的西部">
+  </div>
+
+
+<div class="art-item">
+    <img src="images/art17.JPG" alt="Outsider">
+  </div>
+  <div class="art-item">
+    <img src="images/art18.JPG" alt="Rescue & Silence">
+  </div>
+  <div class="art-item">
+    <img src="images/art19.JPG" alt="荒谬的西部">
+  </div>
+
+
+
+<div class="art-item">
+    <img src="images/art20.JPG" alt="Outsider">
+  </div>
+  <div class="art-item">
+    <img src="images/art21.JPG" alt="Rescue & Silence">
+  </div>
+ 
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+   <div class="contact" style="text-align:center; margin-top:100px;">
+  <h2 style="letter-spacing:4px; font-size:14px; text-transform:uppercase; color:#999;">Contact</h2>
+  <p>Email: <a href="mailto:mengdian1999@outlook.com">mengdian1999@outlook.com</a></p>
+  <p>Instagram: <a href="https://instagram.com/yourinstagram" target="_blank">@yourinstagram</a></p>
+</div>
   </div>
 </body>
 </html>
