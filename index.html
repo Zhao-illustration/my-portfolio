@@ -6,8 +6,6 @@
   <title>Mellissa Zhao Illustration</title> 
 
 
-
-
   <style>
 
   .art-item p {
@@ -60,26 +58,81 @@
       color: #6a6a6a;
       margin: 0 0 54px 0;
     }
- .gallery {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 50px 50px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-/*图片排成网格（像棋盘）*/
-    .art-item {
-      text-align: center;
-    }
 
-   .art-item img {
-  width: 100%;        /* 填满列宽 */
-  max-height: 320px;  /* 最大高度一样 */
-  height: auto;       /* 保持原始比例 */
-  display: block;
-  object-fit: contain; /* 不裁切 */
+
+
+
+
+/* gallery 容器 */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 两列，每列占一半 */
+    gap: 20px; /* 左右间距 */
+    max-width: 100%; /* 不限制最大宽度，让容器随屏幕缩放 */
+    margin: 0 auto;  /* 居中 */
 }
 
+.row-space {
+  grid-column: 1 / -1;
+  height: 60px;
+}
+
+
+
+
+/* 每个图片 */
+.art-item img {
+    width: 100%;       /* 填满列宽 */
+    height: auto;      /* 保持比例 */
+    object-fit: contain; /* 保证整张图片显示，不裁切 */
+    display: block;    /* 去掉底部空隙 */
+}
+
+
+
+/*图片排成网格（像棋盘）*/
+
+.art-item img,
+.art-item video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/*鼠标放上去时，图片轻轻变大*/
+/*.art-item {
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.35s ease;
+}
+*/
+
+/*.art-item:not(:nth-child(10)):not(:nth-child(11)):not(:nth-child(12)):hover {
+  transform: scale(1.08);
+  z-index: 2;
+  position: relative;
+}*/
+
+
+.art-item {
+  text-align: center;
+  overflow: hidden;
+}
+
+.art-item img {
+  transition: transform 0.35s ease;
+}
+
+.art-item:not(:nth-child(10)):not(:nth-child(11)):not(:nth-child(12)) img:hover {
+  transform: scale(1.08);
+}
+
+
+
+
+
+ 
     .art-item p {
       margin: 16px 0 0 0;
       font-size: 19px;
@@ -149,6 +202,10 @@
 </div>
 
 
+
+
+
+
   <div class="art-item">
     <img src="images/art2.JPG" alt="Feed the Fish">
     <p>Feed the Fish</p>
@@ -184,18 +241,30 @@
   <div class="art-item">
     <img src="images/art9.JPG" alt="荒谬的西部">
   </div>
-  <div class="art-item">
-    <img src="images/art10.JPG" alt="Feed the Fish">
+  
+ <div class="art-item">
+  <video autoplay muted loop playsinline>
+    <source src="images/art10.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="art-item">
+    <img src="images/art11.JPG" alt="Feed the Fish">
   </div>
-  <div class="art-item">
-    <img src="images/art11.JPG" alt="Outsider">
-  </div>
+
+
   <div class="art-item">
     <img src="images/art12.JPG" alt="Rescue & Silence">
   </div>
+
+
+<div class="row-space"></div>
+
   <div class="art-item">
     <img src="images/art13.JPG" alt="荒谬的西部">
   </div>
+
+
   <div class="art-item">
     <img src="images/art14.JPG" alt="Outsider">
   </div>
