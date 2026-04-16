@@ -8,6 +8,29 @@
 
   <style>
 
+
+
+.big-art {
+  grid-column: 2 / 4;   /* 占第2列到第3列 */
+  grid-row: span 2;     /* 往下占两行 */
+}
+
+.big-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+
   .art-item p {
   display: none;
 }
@@ -125,11 +148,23 @@
 }
 
 .art-item:not(:nth-child(10)):not(:nth-child(11)):not(:nth-child(12)) img:hover {
-  transform: scale(1.08);
+  transform: scale(1.09);
 }
 
-
-
+/*
+.big-art {
+  overflow: hidden;
+}
+.big-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.big-art img:hover {
+  transform: scale(1.16);
+}那个大鱼*/
 
 
  
@@ -265,27 +300,22 @@
   </div>
 
 
-  <div class="art-item">
-    <img src="images/art14.JPG" alt="Outsider">
-  </div>
-  <div class="art-item">
-    <img src="images/art15.JPG" alt="Rescue & Silence">
-  </div>
+<div class="big-art">
+    <img src="images/art14.JPG" alt="Big artwork">
+</div>
+
+ 
+
   <div class="art-item">
     <img src="images/art16.JPG" alt="荒谬的西部">
   </div>
 
 
-<div class="art-item">
-    <img src="images/art17.JPG" alt="Outsider">
-  </div>
-  <div class="art-item">
-    <img src="images/art18.JPG" alt="Rescue & Silence">
-  </div>
-  <div class="art-item">
-    <img src="images/art19.JPG" alt="荒谬的西部">
-  </div>
-
+ <div class="art-item">
+  <video autoplay muted loop playsinline>
+    <source src="images/art19.MP4" type="video/mp4">
+  </video>
+</div>
 
 
 <div class="art-item">
