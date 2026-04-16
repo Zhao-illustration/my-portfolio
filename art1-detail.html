@@ -112,9 +112,9 @@
     }
 
     .art-description p {
-      margin: 0 0 10px;
+      margin: 0 0 4px;
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.32;
       color: var(--muted);
     }
 
@@ -232,16 +232,84 @@
       }
 
       .art-title {
-        font-size: 26px;
+        font-size: 16px;
+        margin: 8px 0 0;
       }
 
       .art-description {
         font-size: 15px;
+        margin-top: 4px;
+      }
+
+      .art-description p {
+        margin: 0 0 2px;
+        font-size: 14px;
+        line-height: 1.16;
+      }
+
+      .viewer {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      .art-stage {
+        order: 1;
+        margin-bottom: 0;
+      }
+
+      .art-frame {
+        margin-bottom: 0;
+      }
+
+      .info-panel {
+        order: 3;
+        min-height: auto;
+        width: 100%;
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0;
+        display: block;
+        margin-top: -108px;
+      }
+
+      .info-top {
+        max-width: 100%;
+        margin-top: 0;
+        padding-bottom: 0;
       }
 
       .info-bottom {
-        flex-direction: column;
-        align-items: flex-start;
+        display: none;
+      }
+
+      .next-wrap {
+        position: static;
+        order: 2;
+        margin: 0 0 2px;
+        align-self: flex-end;
+        position: relative;
+        z-index: 10;
+      }
+
+      .next-button {
+        width: 56px;
+        height: 56px;
+        pointer-events: auto;
+      }
+
+      .next-button svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .next-label {
+        display: none;
+      }
+
+      .art-date {
+        margin-top: 12px;
+        font-size: 14px;
       }
     }
   </style>
@@ -384,7 +452,24 @@
     }
     document.getElementById("art-date").textContent = work.date;
     const nextButton = document.getElementById("next-button");
+    const nextWrap = document.querySelector(".next-wrap");
+    const viewer = document.querySelector(".viewer");
+    const artStage = document.querySelector(".art-stage");
+    const infoBottom = document.querySelector(".info-bottom");
     nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
+
+    function placeNextButton() {
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        if (nextWrap.parentElement !== viewer) {
+          viewer.insertBefore(nextWrap, document.querySelector(".info-panel"));
+        }
+      } else if (nextWrap.parentElement !== infoBottom) {
+        infoBottom.appendChild(nextWrap);
+      }
+    }
+
+    placeNextButton();
+    window.addEventListener("resize", placeNextButton);
 
     document.body.classList.add("is-entering");
     window.requestAnimationFrame(() => {
