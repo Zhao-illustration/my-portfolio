@@ -413,8 +413,9 @@
       const image = document.createElement("img");
       image.src = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
       image.alt = work.alt;
-      image.loading = "lazy";
+      image.loading = index < 4 ? "eager" : "lazy";
       image.decoding = "async";
+      image.fetchPriority = index < 4 ? "high" : "auto";
       image.addEventListener("load", updateMasonryLayout);
 
       const overlay = document.createElement("div");

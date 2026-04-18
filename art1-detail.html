@@ -296,7 +296,7 @@
         display: flex;
         flex-direction: column;
         min-height: auto;
-        transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: transform 0.98s cubic-bezier(0.16, 0.84, 0.24, 1);
         will-change: transform;
       }
 
@@ -308,6 +308,8 @@
 
       .art-frame {
         margin-bottom: 0;
+        background: #d8d8d8;
+        padding: 8px;
       }
 
       .info-panel {
@@ -403,21 +405,15 @@
       }
 
       .art-stage img {
-        transition: opacity 0.2s ease;
-        will-change: opacity;
-      }
-
-      .art-stage img.is-exiting {
-        opacity: 0;
-      }
-
-      .art-stage img.is-enter-prep {
-        opacity: 0;
         transition: none;
       }
 
-      .art-stage img.is-entering {
-        opacity: 1;
+      .viewer.is-page-slide-next {
+        transform: translateX(18%);
+      }
+
+      .viewer.is-page-slide-prev {
+        transform: translateX(-18%);
       }
     }
   </style>
@@ -570,12 +566,22 @@
     const parsedIndex = Number(params.get("work") || "1") - 1;
     let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
+    let detailImageRequestId = 0;
 
     artImage.decoding = "async";
     artImage.fetchPriority = "high";
 
     function getDetailImageSrc(src) {
       return mobileDetailQuery.matches ? src.replace("new/", "new/detail-mobile/") : src;
+    }
+
+    function getMobilePreviewSrc(src) {
+      return src.replace("new/", "new/mobile/");
+    }
+
+    function resetMobileFlipClasses() {
+      viewer.classList.remove("is-page-slide-next", "is-page-slide-prev");
+      artImage.classList.remove("is-exiting", "is-enter-prep", "is-entering");
     }
 
     function updateDescription(container, text) {
@@ -596,9 +602,9 @@
       const work = works[workIndex];
       const prevIndex = (workIndex - 1 + works.length) % works.length;
       const nextIndex = (workIndex + 1) % works.length;
+      const requestId = ++detailImageRequestId;
 
       document.title = `${work.title} | Mellissa Zhao`;
-      artImage.src = getDetailImageSrc(work.image);
       artImage.alt = work.alt;
       artTitle.textContent = work.title;
       updateDescription(artDescription, work.description);
@@ -607,6 +613,26 @@
       prevButton.setAttribute("aria-label", `Open ${works[prevIndex].title}`);
       nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
       nextButton.setAttribute("aria-label", `Open ${works[nextIndex].title}`);
+
+      if (mobileDetailQuery.matches) {
+        const previewSrc = getMobilePreviewSrc(work.image);
+        const detailSrc = getDetailImageSrc(work.image);
+        artImage.src = previewSrc;
+
+        if (detailSrc !== previewSrc) {
+          const detailLoader = new Image();
+          detailLoader.decoding = "async";
+          detailLoader.fetchPriority = "high";
+          detailLoader.onload = () => {
+            if (detailImageRequestId === requestId) {
+              artImage.src = detailSrc;
+            }
+          };
+          detailLoader.src = detailSrc;
+        }
+      } else {
+        artImage.src = getDetailImageSrc(work.image);
+      }
     }
 
     function getPrevIndex(workIndex) {
@@ -664,30 +690,22 @@
       isAnimatingMobileNext = true;
 
       preloadWork(nextIndex).then(() => {
-        window.setTimeout(() => {
-          artImage.classList.add("is-exiting");
-        }, 0);
+        resetMobileFlipClasses();
+        currentIndex = nextIndex;
+        renderWork(currentIndex);
+        viewer.classList.add("is-page-slide-next");
 
-        window.setTimeout(() => {
-          currentIndex = nextIndex;
-          renderWork(currentIndex);
-          artImage.classList.remove("is-exiting");
-          artImage.classList.add("is-enter-prep");
-
+        window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(() => {
-              artImage.classList.remove("is-enter-prep");
-              artImage.classList.add("is-entering");
-            });
+            viewer.classList.remove("is-page-slide-next");
           });
-        }, 180);
+        });
 
         window.setTimeout(() => {
-          artImage.classList.remove("is-entering");
           history.replaceState(null, "", `art1-detail.html?work=${currentIndex + 1}`);
           preloadWork(getNextIndex(currentIndex));
           isAnimatingMobileNext = false;
-        }, 400);
+        }, 1000);
       });
     }
 
@@ -700,41 +718,28 @@
       isAnimatingMobileNext = true;
 
       preloadWork(prevIndex).then(() => {
-        window.setTimeout(() => {
-          artImage.classList.add("is-exiting");
-        }, 0);
+        resetMobileFlipClasses();
+        currentIndex = prevIndex;
+        renderWork(currentIndex);
+        viewer.classList.add("is-page-slide-prev");
 
-        window.setTimeout(() => {
-          currentIndex = prevIndex;
-          renderWork(currentIndex);
-          artImage.classList.remove("is-exiting");
-          artImage.classList.add("is-enter-prep");
-
+        window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(() => {
-              artImage.classList.remove("is-enter-prep");
-              artImage.classList.add("is-entering");
-            });
+            viewer.classList.remove("is-page-slide-prev");
           });
-        }, 180);
+        });
 
         window.setTimeout(() => {
-          artImage.classList.remove("is-entering");
           history.replaceState(null, "", `art1-detail.html?work=${currentIndex + 1}`);
           preloadWork(getPrevIndex(currentIndex));
           preloadWork(getNextIndex(currentIndex));
           isAnimatingMobileNext = false;
-        }, 400);
+        }, 1000);
       });
     }
 
     prevButton.addEventListener("click", (event) => {
       event.preventDefault();
-
-      if (window.matchMedia("(max-width: 640px)").matches) {
-        animateMobilePrev();
-        return;
-      }
 
       document.body.classList.add("is-sliding-out");
       window.setTimeout(() => {
@@ -744,11 +749,6 @@
 
     nextButton.addEventListener("click", (event) => {
       event.preventDefault();
-
-      if (window.matchMedia("(max-width: 640px)").matches) {
-        animateMobileNext();
-        return;
-      }
 
       document.body.classList.add("is-sliding-out");
       window.setTimeout(() => {
