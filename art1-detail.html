@@ -566,9 +566,17 @@
     const infoPanel = document.querySelector(".info-panel");
     const infoBottom = document.querySelector(".info-bottom");
     const params = new URLSearchParams(window.location.search);
+    const mobileDetailQuery = window.matchMedia("(max-width: 640px)");
     const parsedIndex = Number(params.get("work") || "1") - 1;
     let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
+
+    artImage.decoding = "async";
+    artImage.fetchPriority = "high";
+
+    function getDetailImageSrc(src) {
+      return mobileDetailQuery.matches ? src.replace("new/", "new/detail-mobile/") : src;
+    }
 
     function updateDescription(container, text) {
       if (!text.trim()) {
@@ -590,7 +598,7 @@
       const nextIndex = (workIndex + 1) % works.length;
 
       document.title = `${work.title} | Mellissa Zhao`;
-      artImage.src = work.image;
+      artImage.src = getDetailImageSrc(work.image);
       artImage.alt = work.alt;
       artTitle.textContent = work.title;
       updateDescription(artDescription, work.description);
@@ -614,7 +622,8 @@
         const preloadImage = new Image();
         preloadImage.onload = () => resolve(preloadImage);
         preloadImage.onerror = () => resolve(preloadImage);
-        preloadImage.src = works[workIndex].image;
+        preloadImage.decoding = "async";
+        preloadImage.src = getDetailImageSrc(works[workIndex].image);
       });
     }
 
@@ -633,6 +642,10 @@
 
     placeNextButton();
     window.addEventListener("resize", placeNextButton);
+    mobileDetailQuery.addEventListener("change", () => {
+      renderWork(currentIndex);
+      preloadWork(getNextIndex(currentIndex));
+    });
 
     document.body.classList.add("is-entering");
     window.requestAnimationFrame(() => {
