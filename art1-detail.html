@@ -563,6 +563,7 @@
     const infoBottom = document.querySelector(".info-bottom");
     const params = new URLSearchParams(window.location.search);
     const mobileDetailQuery = window.matchMedia("(max-width: 640px)");
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const parsedIndex = Number(params.get("work") || "1") - 1;
     let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
@@ -577,6 +578,52 @@
 
     function getMobilePreviewSrc(src) {
       return src.replace("new/", "new/mobile/");
+    }
+
+    function shouldUpgradeMobileDetail() {
+      if (!mobileDetailQuery.matches) {
+        return true;
+      }
+
+      if (connection?.saveData) {
+        return false;
+      }
+
+      const effectiveType = connection?.effectiveType || "";
+      if (effectiveType.includes("2g") || effectiveType === "3g") {
+        return false;
+      }
+
+      if (typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 3) {
+        return false;
+      }
+
+      return true;
+    }
+
+    function scheduleMobileDetailUpgrade(src, requestId) {
+      if (!shouldUpgradeMobileDetail()) {
+        return;
+      }
+
+      const startUpgrade = () => {
+        const detailLoader = new Image();
+        detailLoader.decoding = "async";
+        detailLoader.fetchPriority = "low";
+        detailLoader.onload = () => {
+          if (detailImageRequestId === requestId) {
+            artImage.src = src;
+          }
+        };
+        detailLoader.src = src;
+      };
+
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(startUpgrade, { timeout: 1200 });
+        return;
+      }
+
+      window.setTimeout(startUpgrade, 220);
     }
 
     function resetMobileFlipClasses() {
@@ -620,15 +667,7 @@
         artImage.src = previewSrc;
 
         if (detailSrc !== previewSrc) {
-          const detailLoader = new Image();
-          detailLoader.decoding = "async";
-          detailLoader.fetchPriority = "high";
-          detailLoader.onload = () => {
-            if (detailImageRequestId === requestId) {
-              artImage.src = detailSrc;
-            }
-          };
-          detailLoader.src = detailSrc;
+          scheduleMobileDetailUpgrade(detailSrc, requestId);
         }
       } else {
         artImage.src = getDetailImageSrc(work.image);
@@ -649,12 +688,14 @@
         preloadImage.onload = () => resolve(preloadImage);
         preloadImage.onerror = () => resolve(preloadImage);
         preloadImage.decoding = "async";
-        preloadImage.src = getDetailImageSrc(works[workIndex].image);
+        preloadImage.src = mobileDetailQuery.matches ? getMobilePreviewSrc(works[workIndex].image) : getDetailImageSrc(works[workIndex].image);
       });
     }
 
     renderWork(currentIndex);
-    preloadWork(getNextIndex(currentIndex));
+    if (!mobileDetailQuery.matches) {
+      preloadWork(getNextIndex(currentIndex));
+    }
 
     function placeNextButton() {
       if (window.matchMedia("(max-width: 640px)").matches) {
@@ -670,7 +711,9 @@
     window.addEventListener("resize", placeNextButton);
     mobileDetailQuery.addEventListener("change", () => {
       renderWork(currentIndex);
-      preloadWork(getNextIndex(currentIndex));
+      if (!mobileDetailQuery.matches) {
+        preloadWork(getNextIndex(currentIndex));
+      }
     });
 
     document.body.classList.add("is-entering");

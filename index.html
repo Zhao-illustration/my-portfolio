@@ -379,7 +379,7 @@
     let squareCounter = 0;
 
     function getMobileImageSrc(src) {
-      return src.replace("new/", "new/mobile/");
+      return src.replace("new/", "new/mobile-home/");
     }
 
     function updateMasonryLayout() {
@@ -392,6 +392,35 @@
         card.style.setProperty("--row-span", String(span));
       });
     }
+
+    function loadGalleryImage(image, src) {
+      if (image.dataset.loaded === "true" || !src) {
+        return;
+      }
+
+      image.src = src;
+      image.dataset.loaded = "true";
+    }
+
+    function prefetchDetailForWork(work) {
+      const preview = new Image();
+      preview.decoding = "async";
+      preview.src = getMobileImageSrc(work.src);
+    }
+
+    const galleryObserver = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        const image = entry.target;
+        loadGalleryImage(image, image.dataset.src);
+        galleryObserver.unobserve(image);
+      });
+    }, {
+      rootMargin: mobileGalleryQuery.matches ? "220px 0px" : "300px 0px"
+    }) : null;
 
     works.forEach((work, index) => {
       const card = document.createElement("a");
@@ -411,12 +440,27 @@
       card.setAttribute("aria-label", `${work.title}, ${work.year}`);
 
       const image = document.createElement("img");
-      image.src = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
       image.alt = work.alt;
-      image.loading = index < 4 ? "eager" : "lazy";
+      image.width = work.width;
+      image.height = work.height;
       image.decoding = "async";
-      image.fetchPriority = index < 4 ? "high" : "auto";
       image.addEventListener("load", updateMasonryLayout);
+
+      if (mobileGalleryQuery.matches) {
+        const preferredSrc = getMobileImageSrc(work.src);
+        image.loading = index < 2 ? "eager" : "lazy";
+        image.fetchPriority = index < 2 ? "high" : "auto";
+
+        if (index >= 2 && galleryObserver) {
+          image.dataset.src = preferredSrc;
+        } else {
+          loadGalleryImage(image, preferredSrc);
+        }
+      } else {
+        image.src = work.src;
+        image.loading = "lazy";
+        image.fetchPriority = "auto";
+      }
 
       const overlay = document.createElement("div");
       overlay.className = "work-overlay";
@@ -438,24 +482,50 @@
 
       card.appendChild(image);
       card.appendChild(overlay);
+      card.addEventListener("touchstart", () => {
+        if (mobileGalleryQuery.matches) {
+          prefetchDetailForWork(work);
+        }
+      }, { passive: true, once: true });
       card.addEventListener("click", (event) => {
         event.preventDefault();
+
+        if (mobileGalleryQuery.matches) {
+          window.location.href = card.href;
+          return;
+        }
+
         document.body.classList.add("is-transitioning");
         window.setTimeout(() => {
           window.location.href = card.href;
         }, 320);
       });
       gallery.appendChild(card);
+
+      if (galleryObserver && image.dataset.src) {
+        galleryObserver.observe(image);
+      }
     });
 
     function updateGalleryImageSources() {
       Array.from(gallery.querySelectorAll("img")).forEach((image, index) => {
         const work = works[index];
         const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
-        if (image.getAttribute("src") !== nextSrc) {
-          image.src = nextSrc;
+        const shouldDefer = mobileGalleryQuery.matches && index >= 2 && galleryObserver;
+
+        if (shouldDefer) {
+          image.removeAttribute("src");
+          image.dataset.loaded = "false";
+          image.dataset.src = nextSrc;
+          galleryObserver.observe(image);
+        } else if (image.getAttribute("src") !== nextSrc) {
+          image.dataset.src = nextSrc;
+          image.dataset.loaded = "false";
+          loadGalleryImage(image, nextSrc);
         }
       });
+
+      updateMasonryLayout();
     }
 
     window.addEventListener("load", updateMasonryLayout);
