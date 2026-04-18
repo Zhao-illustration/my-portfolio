@@ -367,6 +367,7 @@
     ];
 
     const gallery = document.getElementById("gallery");
+    const mobileGalleryQuery = window.matchMedia("(max-width: 640px)");
     const squareSequence = [
       "feature-tall-soft",
       "feature-square",
@@ -376,6 +377,10 @@
       "feature-square"
     ];
     let squareCounter = 0;
+
+    function getMobileImageSrc(src) {
+      return src.replace("new/", "new/mobile/");
+    }
 
     function updateMasonryLayout() {
       const galleryStyle = window.getComputedStyle(gallery);
@@ -406,9 +411,10 @@
       card.setAttribute("aria-label", `${work.title}, ${work.year}`);
 
       const image = document.createElement("img");
-      image.src = work.src;
+      image.src = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
       image.alt = work.alt;
       image.loading = "lazy";
+      image.decoding = "async";
       image.addEventListener("load", updateMasonryLayout);
 
       const overlay = document.createElement("div");
@@ -441,8 +447,19 @@
       gallery.appendChild(card);
     });
 
+    function updateGalleryImageSources() {
+      Array.from(gallery.querySelectorAll("img")).forEach((image, index) => {
+        const work = works[index];
+        const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
+        if (image.getAttribute("src") !== nextSrc) {
+          image.src = nextSrc;
+        }
+      });
+    }
+
     window.addEventListener("load", updateMasonryLayout);
     window.addEventListener("resize", updateMasonryLayout);
+    mobileGalleryQuery.addEventListener("change", updateGalleryImageSources);
   </script>
 </body>
 </html>
