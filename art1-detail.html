@@ -18,13 +18,19 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
       opacity: 1;
-      overflow-x: hidden;
     }
 
     body.is-entering .page {
@@ -83,6 +89,10 @@
       min-height: calc(100vh - 120px);
     }
 
+    .viewer-shell {
+      position: relative;
+    }
+
     .info-panel {
       display: flex;
       flex-direction: column;
@@ -116,6 +126,7 @@
       font-size: 15px;
       line-height: 1.32;
       color: var(--muted);
+      white-space: pre-line;
     }
 
     .art-description p:last-child {
@@ -137,6 +148,35 @@
       justify-content: space-between;
       align-items: end;
       gap: 20px;
+    }
+
+    .nav-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 14px;
+    }
+
+    .prev-wrap {
+      position: fixed;
+      left: 24px;
+      bottom: 8px;
+      z-index: 40;
+    }
+
+    .prev-wrap .next-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .prev-wrap .next-button {
+      width: 48px;
+      height: 48px;
+    }
+
+    .prev-wrap .next-button svg {
+      width: 20px;
+      height: 20px;
     }
 
     .next-wrap {
@@ -203,6 +243,10 @@
       stroke: currentColor;
     }
 
+    .prev-button svg {
+      transform: scaleX(-1);
+    }
+
     @media (max-width: 900px) {
       .viewer {
         grid-template-columns: 1fr;
@@ -225,6 +269,7 @@
       .page {
         width: min(100% - 24px, 1380px);
         padding-top: 18px;
+        overflow-x: clip;
       }
 
       .topbar {
@@ -251,11 +296,14 @@
         display: flex;
         flex-direction: column;
         min-height: auto;
+        transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
       }
 
       .art-stage {
         order: 1;
         margin-bottom: 0;
+        overflow: hidden;
       }
 
       .art-frame {
@@ -270,26 +318,64 @@
         margin: 0 auto;
         padding: 0;
         display: block;
-        margin-top: -108px;
+        margin-top: 12px;
       }
 
       .info-top {
         max-width: 100%;
         margin-top: 0;
         padding-bottom: 0;
+        padding-right: 0;
+        transform: translateY(-30px);
+        margin-bottom: -30px;
       }
 
       .info-bottom {
-        display: none;
+        display: block;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+        position: fixed;
+        bottom: 24px;
+        right: 16px;
+        z-index: 40;
       }
 
       .next-wrap {
         position: static;
-        order: 2;
-        margin: 0 0 2px;
-        align-self: flex-end;
-        position: relative;
-        z-index: 10;
+        order: initial;
+        margin: 0;
+        z-index: auto;
+      }
+
+      .nav-wrap {
+        gap: 10px;
+      }
+
+      .prev-wrap {
+        position: fixed;
+        left: 16px;
+        bottom: 8px;
+      }
+
+      .prev-wrap .next-label {
+        font-size: 9px;
+      }
+
+      .prev-wrap .next-button {
+        width: 42px;
+        height: 42px;
+      }
+
+      .prev-wrap .next-button svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .nav-wrap .next-wrap:last-child {
+        position: fixed;
+        right: 16px;
+        bottom: 24px;
       }
 
       .next-button {
@@ -311,6 +397,28 @@
         margin-top: 12px;
         font-size: 14px;
       }
+
+      .viewer-shell {
+        overflow: hidden;
+      }
+
+      .art-stage img {
+        transition: opacity 0.2s ease;
+        will-change: opacity;
+      }
+
+      .art-stage img.is-exiting {
+        opacity: 0;
+      }
+
+      .art-stage img.is-enter-prep {
+        opacity: 0;
+        transition: none;
+      }
+
+      .art-stage img.is-entering {
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -321,150 +429,205 @@
       <a href="index.html#contact">Contact</a>
     </div>
 
-    <div class="viewer">
-      <aside class="info-panel">
-        <div class="info-top">
-          <h1 class="art-title" id="art-title"></h1>
-          <p class="art-description" id="art-description"></p>
-          <p class="art-date" id="art-date"></p>
-        </div>
-
-        <div class="info-bottom">
-          <div class="next-wrap">
-            <div class="next-label">Next work</div>
-          <a class="next-button" id="next-button" href="#" aria-label="Open next artwork">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 12h13"></path>
-              <path d="M12 5l7 7-7 7"></path>
-            </svg>
-          </a>
+    <div class="viewer-shell">
+      <div class="viewer">
+        <aside class="info-panel">
+          <div class="info-top">
+            <h1 class="art-title" id="art-title"></h1>
+            <p class="art-description" id="art-description"></p>
+            <p class="art-date" id="art-date"></p>
           </div>
-        </div>
-      </aside>
 
-      <div class="art-stage">
-        <div class="art-frame">
-          <img id="art-image" alt="">
+          <div class="info-bottom">
+            <div class="nav-wrap">
+              <div class="next-wrap prev-wrap">
+                <div class="next-label">Back</div>
+                <a class="next-button prev-button" id="prev-button" href="#" aria-label="Open previous artwork">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h13"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
+
+              <div class="next-wrap">
+                <div class="next-label">Next work</div>
+                <a class="next-button" id="next-button" href="#" aria-label="Open next artwork">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h13"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <div class="art-stage">
+          <div class="art-frame">
+            <img id="art-image" alt="">
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
     const works = [
       {
-        title: "Work 01",
-        date: "2024",
+        title: "Chaotic Dream",
+        date: "2025",
         image: "new/1.jpg",
-        alt: "Work 01",
-        description: "A quiet composition presented in a clear portfolio format, with the image kept central and the text held back."
+        alt: "Chaotic Dream",
+        description: "Born from my experience of Salmon Run, this piece reflects on the fragility of life and the relentless urge to survive in the face of inevitable death."
       },
       {
-        title: "Work 02",
-        date: "2024",
+        title: "Emergency Rescue",
+        date: "2025",
         image: "new/2.jpg",
-        alt: "Work 02",
-        description: "An artwork page focused on clarity, atmosphere, and a slower viewing rhythm."
+        alt: "Emergency Rescue",
+        description: ""
       },
       {
-        title: "Work 03",
-        date: "2024",
+        title: "Decompostion",
+        date: "2025",
         image: "new/3.jpg",
-        alt: "Work 03",
-        description: "A simple presentation that lets the work lead, while the supporting information stays light and controlled."
+        alt: "Decompostion",
+        description: "Set in a long-abandoned pool, this piece explores the subconscious through monsters dissecting fears I had not yet recognized"
       },
       {
-        title: "Work 04",
-        date: "2024",
+        title: "West absurdity",
+        date: "2023",
         image: "new/4.jpg",
-        alt: "Work 04",
-        description: "A restrained artwork detail view designed to feel professional, minimal, and image-first."
+        alt: "West absurdity",
+        description: "This piece explores my confusion and shifting beliefs as I moved from the Eastern to the Western country, questioning previously unwavering views on religion, culture and customs and reflecting the uncertainty of my own identity and the third space experience."
       },
       {
-        title: "Work 05",
-        date: "2024",
+        title: "Rumor",
+        date: "2022",
         image: "new/5.jpg",
-        alt: "Work 05",
-        description: "The page structure is intentionally quiet so attention remains on shape, color, and the internal atmosphere of the piece."
+        alt: "Rumor",
+        description: "A twisted word\n grows many hands.\n Faceless,\n it lives from mouth to mouth.\n Before truth steps in,\n echoes fill the house."
       },
       {
-        title: "Work 06",
-        date: "2024",
+        title: "Begging",
+        date: "2025",
         image: "new/6.jpg",
-        alt: "Work 06",
-        description: "A clean single-work view with just enough context to guide the viewer without interrupting the image."
+        alt: "Begging",
+        description: "This piece depicts the stark contrast between a homeless man in the subway and a tycoon hiding a corpse, reflecting social disparity and hidden darkness."
       },
       {
-        title: "Work 07",
-        date: "2024",
+        title: "Sushi Monster",
+        date: "2022",
         image: "new/7.jpg",
-        alt: "Work 07",
-        description: "A presentation approach that keeps the experience smooth, spacious, and centered on the artwork."
+        alt: "Sushi Monster",
+        description: "This work reflects the high demands placed on kitchen labor in the restaurant industry, and the way capital shapes food pricing, presentation, and the values behind dining culture."
       },
       {
-        title: "Work 08",
-        date: "2024",
+        title: "Caged Bird",
+        date: "2023",
         image: "new/8.jpg",
-        alt: "Work 08",
-        description: "The details stay subtle so the work can be read visually first, rather than through heavy page structure."
+        alt: "Caged Bird",
+        description: "After keeping parrots for several years, I began to question whether animals should live in cages. This work reflects my thoughts on animal rights, captivity, and the responsibility of the owner."
       },
       {
-        title: "Work 09",
-        date: "2024",
+        title: "Dream in the Fish Tank",
+        date: "2023",
         image: "new/9.jpg",
-        alt: "Work 09",
-        description: "A professional portfolio layout that feels direct, clean, and calm while still guiding the viewer through the series."
+        alt: "Dream in the Fish Tank",
+        description: "A dream within a dream, exploring the judgment, tension, and self-examination of my inner desires."
       },
       {
-        title: "Untitled Artwork 09",
-        date: "2024",
+        title: "Pink Dream",
+        date: "2025",
         image: "new/Untitled_Artwork 9.jpg",
-        alt: "Untitled Artwork 09",
-        description: "A minimal artwork page with a smooth viewing rhythm and a clear path into the next image."
+        alt: "Pink Dream",
+        description: "A dream-like work that explores lust, inner desire, fear, satisfaction, and the complex tension between these emotions."
       },
       {
-        title: "Untitled Artwork 10",
-        date: "2024",
+        title: "SuperEgo",
+        date: "2025",
         image: "new/Untitled_Artwork 10.jpg",
-        alt: "Untitled Artwork 10",
-        description: "A quieter single-work presentation with restrained text and a stronger focus on the image itself."
+        alt: "SuperEgo",
+        description: "This work explores the role of the soul and spirit beyond the physical body, both within the inner self and in the outer world. Inspired by Conversations with God by Neale Donald Walsch, it reflects a sense of awe, worship, and fear toward higher dimensions of existence."
       }
     ];
 
-    const params = new URLSearchParams(window.location.search);
-    const index = Number(params.get("work") || "1") - 1;
-    const work = works[index] || works[0];
-    const nextIndex = (index + 1) % works.length;
-
-    document.title = `${work.title} | Mellissa Zhao`;
-    document.getElementById("art-image").src = work.image;
-    document.getElementById("art-image").alt = work.alt;
-    document.getElementById("art-title").textContent = work.title;
-    const descriptionNode = document.getElementById("art-description");
-    const words = work.description.split(" ");
-    const chunkSize = Math.max(1, Math.ceil(words.length / 3));
-    descriptionNode.innerHTML = "";
-
-    for (let i = 0; i < words.length; i += chunkSize) {
-      const paragraph = document.createElement("p");
-      paragraph.textContent = words.slice(i, i + chunkSize).join(" ");
-      descriptionNode.appendChild(paragraph);
-    }
-    document.getElementById("art-date").textContent = work.date;
-    const nextButton = document.getElementById("next-button");
-    const nextWrap = document.querySelector(".next-wrap");
     const viewer = document.querySelector(".viewer");
     const artStage = document.querySelector(".art-stage");
+    const artImage = document.getElementById("art-image");
+    const artTitle = document.getElementById("art-title");
+    const artDescription = document.getElementById("art-description");
+    const artDate = document.getElementById("art-date");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const infoPanel = document.querySelector(".info-panel");
     const infoBottom = document.querySelector(".info-bottom");
-    nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
+    const params = new URLSearchParams(window.location.search);
+    const parsedIndex = Number(params.get("work") || "1") - 1;
+    let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
+    let isAnimatingMobileNext = false;
+
+    function updateDescription(container, text) {
+      if (!text.trim()) {
+        container.innerHTML = "";
+        container.style.display = "none";
+        return;
+      }
+
+      container.style.display = "";
+      container.innerHTML = "";
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      container.appendChild(paragraph);
+    }
+
+    function renderWork(workIndex) {
+      const work = works[workIndex];
+      const prevIndex = (workIndex - 1 + works.length) % works.length;
+      const nextIndex = (workIndex + 1) % works.length;
+
+      document.title = `${work.title} | Mellissa Zhao`;
+      artImage.src = work.image;
+      artImage.alt = work.alt;
+      artTitle.textContent = work.title;
+      updateDescription(artDescription, work.description);
+      artDate.textContent = work.date;
+      prevButton.href = `art1-detail.html?work=${prevIndex + 1}`;
+      prevButton.setAttribute("aria-label", `Open ${works[prevIndex].title}`);
+      nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
+      nextButton.setAttribute("aria-label", `Open ${works[nextIndex].title}`);
+    }
+
+    function getPrevIndex(workIndex) {
+      return (workIndex - 1 + works.length) % works.length;
+    }
+
+    function getNextIndex(workIndex) {
+      return (workIndex + 1) % works.length;
+    }
+
+    function preloadWork(workIndex) {
+      return new Promise((resolve) => {
+        const preloadImage = new Image();
+        preloadImage.onload = () => resolve(preloadImage);
+        preloadImage.onerror = () => resolve(preloadImage);
+        preloadImage.src = works[workIndex].image;
+      });
+    }
+
+    renderWork(currentIndex);
+    preloadWork(getNextIndex(currentIndex));
 
     function placeNextButton() {
       if (window.matchMedia("(max-width: 640px)").matches) {
-        if (nextWrap.parentElement !== viewer) {
-          viewer.insertBefore(nextWrap, document.querySelector(".info-panel"));
+        if (infoBottom.parentElement !== document.body) {
+          document.body.appendChild(infoBottom);
         }
-      } else if (nextWrap.parentElement !== infoBottom) {
-        infoBottom.appendChild(nextWrap);
+      } else if (infoBottom.parentElement !== infoPanel) {
+        infoPanel.appendChild(infoBottom);
       }
     }
 
@@ -479,13 +642,107 @@
       });
     });
 
+    function animateMobileNext() {
+      if (isAnimatingMobileNext) {
+        return;
+      }
+
+      const nextIndex = getNextIndex(currentIndex);
+      isAnimatingMobileNext = true;
+
+      preloadWork(nextIndex).then(() => {
+        window.setTimeout(() => {
+          artImage.classList.add("is-exiting");
+        }, 0);
+
+        window.setTimeout(() => {
+          currentIndex = nextIndex;
+          renderWork(currentIndex);
+          artImage.classList.remove("is-exiting");
+          artImage.classList.add("is-enter-prep");
+
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              artImage.classList.remove("is-enter-prep");
+              artImage.classList.add("is-entering");
+            });
+          });
+        }, 180);
+
+        window.setTimeout(() => {
+          artImage.classList.remove("is-entering");
+          history.replaceState(null, "", `art1-detail.html?work=${currentIndex + 1}`);
+          preloadWork(getNextIndex(currentIndex));
+          isAnimatingMobileNext = false;
+        }, 400);
+      });
+    }
+
+    function animateMobilePrev() {
+      if (isAnimatingMobileNext) {
+        return;
+      }
+
+      const prevIndex = getPrevIndex(currentIndex);
+      isAnimatingMobileNext = true;
+
+      preloadWork(prevIndex).then(() => {
+        window.setTimeout(() => {
+          artImage.classList.add("is-exiting");
+        }, 0);
+
+        window.setTimeout(() => {
+          currentIndex = prevIndex;
+          renderWork(currentIndex);
+          artImage.classList.remove("is-exiting");
+          artImage.classList.add("is-enter-prep");
+
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              artImage.classList.remove("is-enter-prep");
+              artImage.classList.add("is-entering");
+            });
+          });
+        }, 180);
+
+        window.setTimeout(() => {
+          artImage.classList.remove("is-entering");
+          history.replaceState(null, "", `art1-detail.html?work=${currentIndex + 1}`);
+          preloadWork(getPrevIndex(currentIndex));
+          preloadWork(getNextIndex(currentIndex));
+          isAnimatingMobileNext = false;
+        }, 400);
+      });
+    }
+
+    prevButton.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        animateMobilePrev();
+        return;
+      }
+
+      document.body.classList.add("is-sliding-out");
+      window.setTimeout(() => {
+        window.location.href = prevButton.href;
+      }, 420);
+    });
+
     nextButton.addEventListener("click", (event) => {
       event.preventDefault();
+
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        animateMobileNext();
+        return;
+      }
+
       document.body.classList.add("is-sliding-out");
       window.setTimeout(() => {
         window.location.href = nextButton.href;
       }, 420);
     });
+
   </script>
 </body>
 </html>

@@ -205,14 +205,6 @@
       max-width: 80%;
     }
 
-    .work-prompt {
-      display: none;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.78);
-    }
-
     .contact-list {
       max-width: 420px;
       margin: 0 auto;
@@ -305,9 +297,6 @@
         max-width: 100%;
       }
 
-      .work-prompt {
-        display: block;
-      }
     }
   </style>
 </head>
@@ -335,9 +324,7 @@
           <h2 class="section-title">About</h2>
         </div>
         <p class="about-copy">
-          I’m an illustrator and visual artist. My work is centered on atmosphere,
-          visual tension, and detailed image-making, with an interest in building
-          quiet narratives through color, composition, and small symbolic elements.
+          Mellissa Zhao is an illustrator and visual artist with a Bachelor of Design in Illustration from OCAD University in Canada. Her work focuses on atmosphere, visual tension, and detailed image-making, using color, composition, and small symbolic elements to build quiet narratives.
         </p>
       </section>
 
@@ -363,17 +350,17 @@
 
   <script>
     const works = [
-      { title: "Work 01", year: "2024", src: "new/1.jpg", alt: "Work 01", width: 2048, height: 2048 },
-      { title: "Work 02", year: "2024", src: "new/2.jpg", alt: "Work 02", width: 2048, height: 2048 },
-      { title: "Work 03", year: "2024", src: "new/3.jpg", alt: "Work 03", width: 2048, height: 2048 },
-      { title: "Work 04", year: "2024", src: "new/4.jpg", alt: "Work 04", width: 2048, height: 2048 },
-      { title: "Work 05", year: "2024", src: "new/5.jpg", alt: "Work 05", width: 2048, height: 2048 },
-      { title: "Work 06", year: "2024", src: "new/6.jpg", alt: "Work 06", width: 2048, height: 2048 },
-      { title: "Work 07", year: "2024", src: "new/7.jpg", alt: "Work 07", width: 2046, height: 2047 },
-      { title: "Work 08", year: "2024", src: "new/8.jpg", alt: "Work 08", width: 2048, height: 2048 },
-      { title: "Work 09", year: "2024", src: "new/9.jpg", alt: "Work 09", width: 4378, height: 4070 },
-      { title: "Untitled Artwork 09", year: "2024", src: "new/Untitled_Artwork 9.jpg", alt: "Untitled Artwork 09", width: 2048, height: 2048 },
-      { title: "Untitled Artwork 10", year: "2024", src: "new/Untitled_Artwork 10.jpg", alt: "Untitled Artwork 10", width: 2824, height: 2048 }
+      { title: "Chaotic Dream", year: "2025", src: "new/1.jpg", alt: "Chaotic Dream", width: 2048, height: 2048 },
+      { title: "Emergency Rescue", year: "2025", src: "new/2.jpg", alt: "Emergency Rescue", width: 2048, height: 2048 },
+      { title: "Decompostion", year: "2025", src: "new/3.jpg", alt: "Decompostion", width: 2048, height: 2048 },
+      { title: "West absurdity", year: "2023", src: "new/4.jpg", alt: "West absurdity", width: 2048, height: 2048 },
+      { title: "Rumor", year: "2022", src: "new/5.jpg", alt: "Rumor", width: 2048, height: 2048 },
+      { title: "Begging", year: "2025", src: "new/6.jpg", alt: "Begging", width: 2048, height: 2048 },
+      { title: "Sushi Monster", year: "2022", src: "new/7.jpg", alt: "Sushi Monster", width: 2046, height: 2047 },
+      { title: "Caged Bird", year: "2023", src: "new/8.jpg", alt: "Caged Bird", width: 2048, height: 2048 },
+      { title: "Dream in the Fish Tank", year: "2023", src: "new/9.jpg", alt: "Dream in the Fish Tank", width: 4378, height: 4070 },
+      { title: "Pink Dream", year: "2025", src: "new/Untitled_Artwork 9.jpg", alt: "Pink Dream", width: 2048, height: 2048 },
+      { title: "SuperEgo", year: "2025", src: "new/Untitled_Artwork 10.jpg", alt: "SuperEgo", width: 2824, height: 2048 }
     ];
 
     const gallery = document.getElementById("gallery");
@@ -402,7 +389,7 @@
       const card = document.createElement("a");
       card.className = "work-card";
       const ratio = work.width / work.height;
-      const isSquareSource = ratio > 0.95 && ratio < 1.05;
+      const isSquareSource = ratio > 0.95 && ratio < 1.05 || work.src === "new/9.jpg";
 
       if (isSquareSource) {
         card.classList.add(squareSequence[squareCounter % squareSequence.length]);
@@ -437,11 +424,7 @@
       title.className = "work-title";
       title.textContent = work.title;
 
-      const prompt = document.createElement("p");
-      prompt.className = "work-prompt";
-      prompt.textContent = "Tap to open";
-
-      overlay.append(icon, title, prompt);
+      overlay.append(icon, title);
 
       card.appendChild(image);
       card.appendChild(overlay);
