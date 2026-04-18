@@ -382,6 +382,10 @@
       return src.replace("new/", "new/mobile-home-lite/");
     }
 
+    function getDesktopImageSrc(src) {
+      return src.replace("new/", "new/desktop-home/");
+    }
+
     function updateMasonryLayout() {
       const galleryStyle = window.getComputedStyle(gallery);
       const rowHeight = Number.parseFloat(galleryStyle.getPropertyValue("grid-auto-rows"));
@@ -457,7 +461,7 @@
           loadGalleryImage(image, preferredSrc);
         }
       } else {
-        image.src = work.src;
+        image.src = getDesktopImageSrc(work.src);
         image.loading = "lazy";
         image.fetchPriority = "auto";
       }
@@ -510,7 +514,7 @@
     function updateGalleryImageSources() {
       Array.from(gallery.querySelectorAll("img")).forEach((image, index) => {
         const work = works[index];
-        const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : work.src;
+        const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : getDesktopImageSrc(work.src);
         const shouldDefer = mobileGalleryQuery.matches && index >= 2 && galleryObserver;
 
         if (shouldDefer) {

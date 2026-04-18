@@ -563,67 +563,28 @@
     const infoBottom = document.querySelector(".info-bottom");
     const params = new URLSearchParams(window.location.search);
     const mobileDetailQuery = window.matchMedia("(max-width: 640px)");
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const parsedIndex = Number(params.get("work") || "1") - 1;
     let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
-    let detailImageRequestId = 0;
 
+    artImage.loading = "lazy";
     artImage.decoding = "async";
-    artImage.fetchPriority = "high";
+    artImage.fetchPriority = "auto";
 
     function getDetailImageSrc(src) {
-      return mobileDetailQuery.matches ? src.replace("new/", "new/detail-mobile/") : src;
+      return src.replace("new/", "new/detail-960/");
     }
 
-    function getMobilePreviewSrc(src) {
-      return src.replace("new/", "new/mobile/");
+    function getDetailImageLargeSrc(src) {
+      return src.replace("new/", "new/detail-1440/");
     }
 
-    function shouldUpgradeMobileDetail() {
-      if (!mobileDetailQuery.matches) {
-        return true;
-      }
-
-      if (connection?.saveData) {
-        return false;
-      }
-
-      const effectiveType = connection?.effectiveType || "";
-      if (effectiveType.includes("2g") || effectiveType === "3g") {
-        return false;
-      }
-
-      if (typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 3) {
-        return false;
-      }
-
-      return true;
+    function getDetailImageSrcSet(src) {
+      return `${getDetailImageSrc(src)} 960w, ${getDetailImageLargeSrc(src)} 1440w`;
     }
 
-    function scheduleMobileDetailUpgrade(src, requestId) {
-      if (!shouldUpgradeMobileDetail()) {
-        return;
-      }
-
-      const startUpgrade = () => {
-        const detailLoader = new Image();
-        detailLoader.decoding = "async";
-        detailLoader.fetchPriority = "low";
-        detailLoader.onload = () => {
-          if (detailImageRequestId === requestId) {
-            artImage.src = src;
-          }
-        };
-        detailLoader.src = src;
-      };
-
-      if ("requestIdleCallback" in window) {
-        window.requestIdleCallback(startUpgrade, { timeout: 1200 });
-        return;
-      }
-
-      window.setTimeout(startUpgrade, 220);
+    function getDetailImageSizes() {
+      return mobileDetailQuery.matches ? "100vw" : "(max-width: 900px) 100vw, 680px";
     }
 
     function resetMobileFlipClasses() {
@@ -649,7 +610,6 @@
       const work = works[workIndex];
       const prevIndex = (workIndex - 1 + works.length) % works.length;
       const nextIndex = (workIndex + 1) % works.length;
-      const requestId = ++detailImageRequestId;
 
       document.title = `${work.title} | Mellissa Zhao`;
       artImage.alt = work.alt;
@@ -660,19 +620,12 @@
       prevButton.setAttribute("aria-label", `Open ${works[prevIndex].title}`);
       nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
       nextButton.setAttribute("aria-label", `Open ${works[nextIndex].title}`);
-
-      if (mobileDetailQuery.matches) {
-        const previewSrc = getMobilePreviewSrc(work.image);
-        const detailSrc = getDetailImageSrc(work.image);
-        artImage.src = previewSrc;
-
-        if (detailSrc !== previewSrc) {
-          scheduleMobileDetailUpgrade(detailSrc, requestId);
-        }
-      } else {
-        artImage.src = getDetailImageSrc(work.image);
-      }
+      artImage.sizes = getDetailImageSizes();
+      artImage.srcset = getDetailImageSrcSet(work.image);
+      artImage.src = getDetailImageSrc(work.image);
     }
+
+    renderWork(currentIndex);
 
     function getPrevIndex(workIndex) {
       return (workIndex - 1 + works.length) % works.length;
@@ -680,21 +633,6 @@
 
     function getNextIndex(workIndex) {
       return (workIndex + 1) % works.length;
-    }
-
-    function preloadWork(workIndex) {
-      return new Promise((resolve) => {
-        const preloadImage = new Image();
-        preloadImage.onload = () => resolve(preloadImage);
-        preloadImage.onerror = () => resolve(preloadImage);
-        preloadImage.decoding = "async";
-        preloadImage.src = mobileDetailQuery.matches ? getMobilePreviewSrc(works[workIndex].image) : getDetailImageSrc(works[workIndex].image);
-      });
-    }
-
-    renderWork(currentIndex);
-    if (!mobileDetailQuery.matches) {
-      preloadWork(getNextIndex(currentIndex));
     }
 
     function placeNextButton() {
@@ -711,9 +649,6 @@
     window.addEventListener("resize", placeNextButton);
     mobileDetailQuery.addEventListener("change", () => {
       renderWork(currentIndex);
-      if (!mobileDetailQuery.matches) {
-        preloadWork(getNextIndex(currentIndex));
-      }
     });
 
     document.body.classList.add("is-entering");
