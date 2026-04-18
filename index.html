@@ -279,12 +279,16 @@
     @media (hover: none), (pointer: coarse) {
       .work-overlay {
         opacity: 1;
-        justify-content: end;
-        align-items: start;
-        gap: 8px;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
         padding: 12px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.12));
-        text-align: left;
+        background: rgba(0, 0, 0, 0.12);
+        text-align: center;
+      }
+
+      .work-icon {
+        filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
       }
 
       .work-icon svg {
@@ -293,8 +297,7 @@
       }
 
       .work-title {
-        font-size: 13px;
-        max-width: 100%;
+        display: none;
       }
 
     }
