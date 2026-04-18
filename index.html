@@ -379,7 +379,7 @@
     let squareCounter = 0;
 
     function getMobileImageSrc(src) {
-      return src.replace("new/", "new/mobile-home/");
+      return src.replace("new/", "new/mobile-home-lite/");
     }
 
     function updateMasonryLayout() {
@@ -448,10 +448,10 @@
 
       if (mobileGalleryQuery.matches) {
         const preferredSrc = getMobileImageSrc(work.src);
-        image.loading = index < 2 ? "eager" : "lazy";
-        image.fetchPriority = index < 2 ? "high" : "auto";
+        image.loading = index < 1 ? "eager" : "lazy";
+        image.fetchPriority = index < 1 ? "high" : "auto";
 
-        if (index >= 2 && galleryObserver) {
+        if (index >= 1 && galleryObserver) {
           image.dataset.src = preferredSrc;
         } else {
           loadGalleryImage(image, preferredSrc);
