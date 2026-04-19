@@ -410,7 +410,7 @@
       const picture = document.createElement("picture");
       const webpSource = document.createElement("source");
       webpSource.type = "image/webp";
-      webpSource.srcset = `${getArtworkAssetPath(work, "thumbMobile", "webp")} 800w, ${getArtworkAssetPath(work, "thumbDesktop", "webp")} 1200w`;
+      webpSource.srcset = `${getArtworkAssetPath(work, "thumbMobile", "webp")} 640w, ${getArtworkAssetPath(work, "thumbDesktop", "webp")} 1000w`;
       webpSource.sizes = galleryImageSizes;
 
       const image = document.createElement("img");
@@ -418,11 +418,11 @@
       image.width = work.width;
       image.height = work.height;
       image.src = getArtworkAssetPath(work, "thumbMobile");
-      image.srcset = `${getArtworkAssetPath(work, "thumbMobile")} 800w, ${getArtworkAssetPath(work, "thumbDesktop")} 1200w`;
+      image.srcset = `${getArtworkAssetPath(work, "thumbMobile")} 640w, ${getArtworkAssetPath(work, "thumbDesktop")} 1000w`;
       image.sizes = galleryImageSizes;
       image.decoding = "async";
-      image.loading = index < 2 ? "eager" : "lazy";
-      image.fetchPriority = index < 2 ? "high" : "auto";
+      image.loading = index < 1 ? "eager" : "lazy";
+      image.fetchPriority = index < 1 ? "high" : "auto";
       image.addEventListener("load", updateMasonryLayout);
 
       const overlay = document.createElement("div");

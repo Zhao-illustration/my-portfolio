@@ -10,20 +10,38 @@ from PIL import Image, ImageOps
 
 SOURCE_DIR = ROOT / "new"
 OUTPUTS = {
-    "thumb-mobile": 800,
-    "thumb-desktop": 1200,
-    "large-mobile": 1400,
-    "large-desktop": 2000,
+    "thumb-mobile": 640,
+    "thumb-desktop": 1000,
+    "large-mobile": 1200,
+    "large-desktop": 1800,
 }
 
 JPEG_OPTIONS_BY_VARIANT = {
     "default": {
         "format": "JPEG",
-        "quality": 88,
+        "quality": 82,
         "optimize": True,
         "progressive": True,
     },
     "thumb-mobile": {
+        "format": "JPEG",
+        "quality": 74,
+        "optimize": True,
+        "progressive": True,
+    },
+    "thumb-desktop": {
+        "format": "JPEG",
+        "quality": 80,
+        "optimize": True,
+        "progressive": True,
+    },
+    "large-mobile": {
+        "format": "JPEG",
+        "quality": 80,
+        "optimize": True,
+        "progressive": True,
+    },
+    "large-desktop": {
         "format": "JPEG",
         "quality": 78,
         "optimize": True,
@@ -34,12 +52,27 @@ JPEG_OPTIONS_BY_VARIANT = {
 WEBP_OPTIONS_BY_VARIANT = {
     "default": {
         "format": "WEBP",
-        "quality": 84,
+        "quality": 76,
         "method": 6,
     },
     "thumb-mobile": {
         "format": "WEBP",
+        "quality": 68,
+        "method": 6,
+    },
+    "thumb-desktop": {
+        "format": "WEBP",
+        "quality": 72,
+        "method": 6,
+    },
+    "large-mobile": {
+        "format": "WEBP",
         "quality": 74,
+        "method": 6,
+    },
+    "large-desktop": {
+        "format": "WEBP",
+        "quality": 70,
         "method": 6,
     },
 }
