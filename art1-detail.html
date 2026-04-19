@@ -204,15 +204,9 @@
     .art-frame {
       width: 100%;
       max-width: 680px;
-      aspect-ratio: var(--art-ratio, 1 / 1);
       background: #d8d8d8;
       border-radius: 8px;
       padding: 8px;
-    }
-
-    .art-frame picture {
-      display: block;
-      width: 100%;
     }
 
     .art-stage img {
@@ -468,10 +462,7 @@
 
         <div class="art-stage">
           <div class="art-frame">
-            <picture>
-              <source id="art-image-webp" type="image/webp">
-              <img id="art-image" alt="" width="2048" height="2048">
-            </picture>
+            <img id="art-image" alt="">
           </div>
         </div>
       </div>
@@ -486,8 +477,6 @@
         date: "2025",
         image: "new/1.jpg",
         alt: "Chaotic Dream",
-        width: 2048,
-        height: 2048,
         description: "Born from my experience of Salmon Run, this piece reflects on the fragility of life and the relentless urge to survive in the face of inevitable death."
       },
       {
@@ -495,8 +484,6 @@
         date: "2025",
         image: "new/2.jpg",
         alt: "Emergency Rescue",
-        width: 2048,
-        height: 2048,
         description: ""
       },
       {
@@ -504,8 +491,6 @@
         date: "2025",
         image: "new/3.jpg",
         alt: "Decompostion",
-        width: 2048,
-        height: 2048,
         description: "Set in a long-abandoned pool, this piece explores the subconscious through monsters dissecting fears I had not yet recognized"
       },
       {
@@ -513,8 +498,6 @@
         date: "2023",
         image: "new/4.jpg",
         alt: "West absurdity",
-        width: 2048,
-        height: 2048,
         description: "This piece explores my confusion and shifting beliefs as I moved from the Eastern to the Western country, questioning previously unwavering views on religion, culture and customs and reflecting the uncertainty of my own identity and the third space experience."
       },
       {
@@ -522,8 +505,6 @@
         date: "2022",
         image: "new/5.jpg",
         alt: "Rumor",
-        width: 2048,
-        height: 2048,
         description: "A twisted word\n grows many hands.\n Faceless,\n it lives from mouth to mouth.\n Before truth steps in,\n echoes fill the house."
       },
       {
@@ -531,8 +512,6 @@
         date: "2025",
         image: "new/6.jpg",
         alt: "Begging",
-        width: 2048,
-        height: 2048,
         description: "This piece depicts the stark contrast between a homeless man in the subway and a tycoon hiding a corpse, reflecting social disparity and hidden darkness."
       },
       {
@@ -540,8 +519,6 @@
         date: "2022",
         image: "new/7.jpg",
         alt: "Sushi Monster",
-        width: 2046,
-        height: 2047,
         description: "This work reflects the high demands placed on kitchen labor in the restaurant industry, and the way capital shapes food pricing, presentation, and the values behind dining culture."
       },
       {
@@ -549,8 +526,6 @@
         date: "2023",
         image: "new/8.jpg",
         alt: "Caged Bird",
-        width: 2048,
-        height: 2048,
         description: "After keeping parrots for several years, I began to question whether animals should live in cages. This work reflects my thoughts on animal rights, captivity, and the responsibility of the owner."
       },
       {
@@ -558,8 +533,6 @@
         date: "2023",
         image: "new/9.jpg",
         alt: "Dream in the Fish Tank",
-        width: 4378,
-        height: 4070,
         description: "A dream within a dream, exploring the judgment, tension, and self-examination of my inner desires."
       },
       {
@@ -567,8 +540,6 @@
         date: "2025",
         image: "new/Untitled_Artwork 9.jpg",
         alt: "Pink Dream",
-        width: 2048,
-        height: 2048,
         description: "A dream-like work that explores lust, inner desire, fear, satisfaction, and the complex tension between these emotions."
       },
       {
@@ -576,16 +547,12 @@
         date: "2025",
         image: "new/Untitled_Artwork 10.jpg",
         alt: "SuperEgo",
-        width: 2824,
-        height: 2048,
         description: "This work explores the role of the soul and spirit beyond the physical body, both within the inner self and in the outer world. Inspired by Conversations with God by Neale Donald Walsch, it reflects a sense of awe, worship, and fear toward higher dimensions of existence."
       }
     ];
 
     const viewer = document.querySelector(".viewer");
     const artStage = document.querySelector(".art-stage");
-    const artFrame = document.querySelector(".art-frame");
-    const artImageWebp = document.getElementById("art-image-webp");
     const artImage = document.getElementById("art-image");
     const artTitle = document.getElementById("art-title");
     const artDescription = document.getElementById("art-description");
@@ -600,32 +567,24 @@
     let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
 
-    artImage.loading = "eager";
-    artImage.decoding = "auto";
-    artImage.fetchPriority = "high";
-
-    function getVariantPath(src, folder, extension = "jpg") {
-      return encodeURI(src.replace("new/", `${folder}/`).replace(/\.[^.]+$/, `.${extension}`));
-    }
+    artImage.loading = "lazy";
+    artImage.decoding = "async";
+    artImage.fetchPriority = "auto";
 
     function getDetailImageSrc(src) {
-      return getVariantPath(src, "new/detail-mobile-opt");
+      return src.replace("new/", "new/detail-960/");
     }
 
     function getDetailImageLargeSrc(src) {
-      return getVariantPath(src, "new/detail-desktop-opt");
-    }
-
-    function getDetailImageWebpSrcSet(src) {
-      return `${getVariantPath(src, "new/detail-mobile-opt", "webp")} 1440w, ${getVariantPath(src, "new/detail-desktop-opt", "webp")} 1800w`;
+      return src.replace("new/", "new/detail-1440/");
     }
 
     function getDetailImageSrcSet(src) {
-      return `${getDetailImageSrc(src)} 1440w, ${getDetailImageLargeSrc(src)} 1800w`;
+      return `${getDetailImageSrc(src)} 960w, ${getDetailImageLargeSrc(src)} 1440w`;
     }
 
     function getDetailImageSizes() {
-      return "(max-width: 900px) 100vw, 680px";
+      return mobileDetailQuery.matches ? "100vw" : "(max-width: 900px) 100vw, 680px";
     }
 
     function resetMobileFlipClasses() {
@@ -654,9 +613,6 @@
 
       document.title = `${work.title} | Mellissa Zhao`;
       artImage.alt = work.alt;
-      artImage.width = work.width;
-      artImage.height = work.height;
-      artFrame.style.setProperty("--art-ratio", `${work.width} / ${work.height}`);
       artTitle.textContent = work.title;
       updateDescription(artDescription, work.description);
       artDate.textContent = work.date;
@@ -664,8 +620,6 @@
       prevButton.setAttribute("aria-label", `Open ${works[prevIndex].title}`);
       nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
       nextButton.setAttribute("aria-label", `Open ${works[nextIndex].title}`);
-      artImageWebp.sizes = getDetailImageSizes();
-      artImageWebp.srcset = getDetailImageWebpSrcSet(work.image);
       artImage.sizes = getDetailImageSizes();
       artImage.srcset = getDetailImageSrcSet(work.image);
       artImage.src = getDetailImageSrc(work.image);
