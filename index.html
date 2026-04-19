@@ -138,6 +138,11 @@
       outline-offset: 6px;
     }
 
+    .work-card picture {
+      display: block;
+      height: 100%;
+    }
+
     .work-card img {
       width: 100%;
       height: 100%;
@@ -368,6 +373,7 @@
 
     const gallery = document.getElementById("gallery");
     const mobileGalleryQuery = window.matchMedia("(max-width: 640px)");
+    const gallerySizes = "(max-width: 860px) 50vw, 33vw";
     const squareSequence = [
       "feature-tall-soft",
       "feature-square",
@@ -378,12 +384,48 @@
     ];
     let squareCounter = 0;
 
-    function getMobileImageSrc(src) {
-      return src.replace("new/", "new/mobile-home-lite/");
+    function getInitialGalleryCount() {
+      return mobileGalleryQuery.matches ? 2 : 3;
     }
 
-    function getDesktopImageSrc(src) {
-      return src.replace("new/", "new/desktop-home/");
+    function swapExtension(src, extension) {
+      return src.replace(/\.[^.]+$/, `.${extension}`);
+    }
+
+    function getVariantPath(src, folder, extension = "jpg") {
+      return encodeURI(src.replace("new/", `${folder}/`).replace(/\.[^.]+$/, `.${extension}`));
+    }
+
+    function getMobileImageSrc(src, extension = "jpg") {
+      return getVariantPath(src, "new/thumb-mobile-opt", extension);
+    }
+
+    function getDesktopImageSrc(src, extension = "jpg") {
+      return getVariantPath(src, "new/thumb-desktop-opt", extension);
+    }
+
+    function getDetailMobileImageSrc(src) {
+      return getVariantPath(src, "new/detail-mobile-opt");
+    }
+
+    function getCardRatio(card) {
+      if (card.classList.contains("feature-square")) {
+        return 1;
+      }
+
+      if (card.classList.contains("feature-tall")) {
+        return 4 / 6;
+      }
+
+      if (card.classList.contains("feature-tall-soft")) {
+        return 4 / 5.4;
+      }
+
+      if (card.classList.contains("feature-tall-deep")) {
+        return 4 / 6.4;
+      }
+
+      return Number(card.dataset.aspectRatio || "1");
     }
 
     function updateMasonryLayout() {
@@ -392,39 +434,19 @@
       const rowGap = Number.parseFloat(galleryStyle.getPropertyValue("row-gap"));
 
       Array.from(gallery.children).forEach((card) => {
-        const span = Math.ceil((card.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+        const ratio = getCardRatio(card);
+        const width = card.getBoundingClientRect().width;
+        const height = width / ratio;
+        const span = Math.ceil((height + rowGap) / (rowHeight + rowGap));
         card.style.setProperty("--row-span", String(span));
       });
-    }
-
-    function loadGalleryImage(image, src) {
-      if (image.dataset.loaded === "true" || !src) {
-        return;
-      }
-
-      image.src = src;
-      image.dataset.loaded = "true";
     }
 
     function prefetchDetailForWork(work) {
       const preview = new Image();
       preview.decoding = "async";
-      preview.src = getMobileImageSrc(work.src);
+      preview.src = getDetailMobileImageSrc(work.src);
     }
-
-    const galleryObserver = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
-
-        const image = entry.target;
-        loadGalleryImage(image, image.dataset.src);
-        galleryObserver.unobserve(image);
-      });
-    }, {
-      rootMargin: mobileGalleryQuery.matches ? "220px 0px" : "300px 0px"
-    }) : null;
 
     works.forEach((work, index) => {
       const card = document.createElement("a");
@@ -438,33 +460,28 @@
       } else {
         card.classList.add("feature-original");
         card.style.setProperty("--art-ratio", `${work.width} / ${work.height}`);
+        card.dataset.aspectRatio = String(work.width / work.height);
       }
 
       card.href = `art1-detail.html?work=${index + 1}`;
       card.setAttribute("aria-label", `${work.title}, ${work.year}`);
 
+      const picture = document.createElement("picture");
+      const webpSource = document.createElement("source");
+      webpSource.type = "image/webp";
+      webpSource.srcset = `${getMobileImageSrc(work.src, "webp")} 720w, ${getDesktopImageSrc(work.src, "webp")} 1000w`;
+      webpSource.sizes = gallerySizes;
+
       const image = document.createElement("img");
       image.alt = work.alt;
       image.width = work.width;
       image.height = work.height;
-      image.decoding = "async";
-      image.addEventListener("load", updateMasonryLayout);
-
-      if (mobileGalleryQuery.matches) {
-        const preferredSrc = getMobileImageSrc(work.src);
-        image.loading = index < 1 ? "eager" : "lazy";
-        image.fetchPriority = index < 1 ? "high" : "auto";
-
-        if (index >= 1 && galleryObserver) {
-          image.dataset.src = preferredSrc;
-        } else {
-          loadGalleryImage(image, preferredSrc);
-        }
-      } else {
-        image.src = getDesktopImageSrc(work.src);
-        image.loading = "lazy";
-        image.fetchPriority = "auto";
-      }
+      image.src = getDesktopImageSrc(work.src);
+      image.srcset = `${getMobileImageSrc(work.src)} 720w, ${getDesktopImageSrc(work.src)} 1000w`;
+      image.sizes = gallerySizes;
+      image.decoding = index < getInitialGalleryCount() ? "auto" : "async";
+      image.loading = index < getInitialGalleryCount() ? "eager" : "lazy";
+      image.fetchPriority = index === 0 ? "high" : "auto";
 
       const overlay = document.createElement("div");
       overlay.className = "work-overlay";
@@ -484,7 +501,8 @@
 
       overlay.append(icon, title);
 
-      card.appendChild(image);
+      picture.append(webpSource, image);
+      card.appendChild(picture);
       card.appendChild(overlay);
       card.addEventListener("touchstart", () => {
         if (mobileGalleryQuery.matches) {
@@ -505,36 +523,10 @@
         }, 320);
       });
       gallery.appendChild(card);
-
-      if (galleryObserver && image.dataset.src) {
-        galleryObserver.observe(image);
-      }
     });
-
-    function updateGalleryImageSources() {
-      Array.from(gallery.querySelectorAll("img")).forEach((image, index) => {
-        const work = works[index];
-        const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : getDesktopImageSrc(work.src);
-        const shouldDefer = mobileGalleryQuery.matches && index >= 2 && galleryObserver;
-
-        if (shouldDefer) {
-          image.removeAttribute("src");
-          image.dataset.loaded = "false";
-          image.dataset.src = nextSrc;
-          galleryObserver.observe(image);
-        } else if (image.getAttribute("src") !== nextSrc) {
-          image.dataset.src = nextSrc;
-          image.dataset.loaded = "false";
-          loadGalleryImage(image, nextSrc);
-        }
-      });
-
-      updateMasonryLayout();
-    }
 
     window.addEventListener("load", updateMasonryLayout);
     window.addEventListener("resize", updateMasonryLayout);
-    mobileGalleryQuery.addEventListener("change", updateGalleryImageSources);
   </script>
 </body>
 </html>
