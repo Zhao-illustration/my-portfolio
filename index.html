@@ -138,11 +138,19 @@
       outline-offset: 6px;
     }
 
+    .work-card picture,
     .work-card img {
       width: 100%;
+      display: block;
+    }
+
+    .work-card picture {
+      height: 100%;
+    }
+
+    .work-card img {
       height: 100%;
       object-fit: cover;
-      display: block;
     }
 
     .work-card.feature-square {
@@ -159,6 +167,10 @@
 
     .work-card.feature-tall-deep {
       aspect-ratio: 4 / 6.4;
+    }
+
+    .work-card.feature-landscape {
+      aspect-ratio: 4 / 3;
     }
 
     .work-card.feature-original {
@@ -238,7 +250,7 @@
       }
 
       .gallery {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         --gallery-gap: 18px;
       }
     }
@@ -351,23 +363,10 @@
     </main>
   </div>
 
+  <script src="artworks.js"></script>
   <script>
-    const works = [
-      { title: "Chaotic Dream", year: "2025", src: "new/1.jpg", alt: "Chaotic Dream", width: 2048, height: 2048 },
-      { title: "Emergency Rescue", year: "2025", src: "new/2.jpg", alt: "Emergency Rescue", width: 2048, height: 2048 },
-      { title: "Decompostion", year: "2025", src: "new/3.jpg", alt: "Decompostion", width: 2048, height: 2048 },
-      { title: "West absurdity", year: "2023", src: "new/4.jpg", alt: "West absurdity", width: 2048, height: 2048 },
-      { title: "Rumor", year: "2022", src: "new/5.jpg", alt: "Rumor", width: 2048, height: 2048 },
-      { title: "Begging", year: "2025", src: "new/6.jpg", alt: "Begging", width: 2048, height: 2048 },
-      { title: "Sushi Monster", year: "2022", src: "new/7.jpg", alt: "Sushi Monster", width: 2046, height: 2047 },
-      { title: "Caged Bird", year: "2023", src: "new/8.jpg", alt: "Caged Bird", width: 2048, height: 2048 },
-      { title: "Dream in the Fish Tank", year: "2023", src: "new/9.jpg", alt: "Dream in the Fish Tank", width: 4378, height: 4070 },
-      { title: "Pink Dream", year: "2025", src: "new/Untitled_Artwork 9.jpg", alt: "Pink Dream", width: 2048, height: 2048 },
-      { title: "SuperEgo", year: "2025", src: "new/Untitled_Artwork 10.jpg", alt: "SuperEgo", width: 2824, height: 2048 }
-    ];
-
     const gallery = document.getElementById("gallery");
-    const mobileGalleryQuery = window.matchMedia("(max-width: 640px)");
+    const galleryImageSizes = "(max-width: 640px) 50vw, (max-width: 860px) 33vw, 33vw";
     const squareSequence = [
       "feature-tall-soft",
       "feature-square",
@@ -377,14 +376,6 @@
       "feature-square"
     ];
     let squareCounter = 0;
-
-    function getMobileImageSrc(src) {
-      return src.replace("new/", "new/mobile-home-lite/");
-    }
-
-    function getDesktopImageSrc(src) {
-      return src.replace("new/", "new/desktop-home/");
-    }
 
     function updateMasonryLayout() {
       const galleryStyle = window.getComputedStyle(gallery);
@@ -397,74 +388,42 @@
       });
     }
 
-    function loadGalleryImage(image, src) {
-      if (image.dataset.loaded === "true" || !src) {
-        return;
-      }
-
-      image.src = src;
-      image.dataset.loaded = "true";
-    }
-
-    function prefetchDetailForWork(work) {
-      const preview = new Image();
-      preview.decoding = "async";
-      preview.src = getMobileImageSrc(work.src);
-    }
-
-    const galleryObserver = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          return;
-        }
-
-        const image = entry.target;
-        loadGalleryImage(image, image.dataset.src);
-        galleryObserver.unobserve(image);
-      });
-    }, {
-      rootMargin: mobileGalleryQuery.matches ? "220px 0px" : "300px 0px"
-    }) : null;
-
-    works.forEach((work, index) => {
+    ARTWORKS.forEach((work, index) => {
       const card = document.createElement("a");
       card.className = "work-card";
       const ratio = work.width / work.height;
-      const isSquareSource = ratio > 0.95 && ratio < 1.05 || work.src === "new/9.jpg";
+      const isSquareSource = (ratio > 0.95 && ratio < 1.05) || work.fileName === "9.jpg";
 
       if (isSquareSource) {
         card.classList.add(squareSequence[squareCounter % squareSequence.length]);
         squareCounter += 1;
-      } else {
+      } else if (ratio > 1.2) {
         card.classList.add("feature-original");
         card.style.setProperty("--art-ratio", `${work.width} / ${work.height}`);
+      } else {
+        card.classList.add("feature-tall");
       }
 
       card.href = `art1-detail.html?work=${index + 1}`;
       card.setAttribute("aria-label", `${work.title}, ${work.year}`);
 
+      const picture = document.createElement("picture");
+      const webpSource = document.createElement("source");
+      webpSource.type = "image/webp";
+      webpSource.srcset = `${getArtworkAssetPath(work, "thumbMobile", "webp")} 800w, ${getArtworkAssetPath(work, "thumbDesktop", "webp")} 1200w`;
+      webpSource.sizes = galleryImageSizes;
+
       const image = document.createElement("img");
       image.alt = work.alt;
       image.width = work.width;
       image.height = work.height;
+      image.src = getArtworkAssetPath(work, "thumbMobile");
+      image.srcset = `${getArtworkAssetPath(work, "thumbMobile")} 800w, ${getArtworkAssetPath(work, "thumbDesktop")} 1200w`;
+      image.sizes = galleryImageSizes;
       image.decoding = "async";
+      image.loading = index < 2 ? "eager" : "lazy";
+      image.fetchPriority = index < 2 ? "high" : "auto";
       image.addEventListener("load", updateMasonryLayout);
-
-      if (mobileGalleryQuery.matches) {
-        const preferredSrc = getMobileImageSrc(work.src);
-        image.loading = index < 1 ? "eager" : "lazy";
-        image.fetchPriority = index < 1 ? "high" : "auto";
-
-        if (index >= 1 && galleryObserver) {
-          image.dataset.src = preferredSrc;
-        } else {
-          loadGalleryImage(image, preferredSrc);
-        }
-      } else {
-        image.src = getDesktopImageSrc(work.src);
-        image.loading = "lazy";
-        image.fetchPriority = "auto";
-      }
 
       const overlay = document.createElement("div");
       overlay.className = "work-overlay";
@@ -484,17 +443,13 @@
 
       overlay.append(icon, title);
 
-      card.appendChild(image);
+      picture.append(webpSource, image);
+      card.appendChild(picture);
       card.appendChild(overlay);
-      card.addEventListener("touchstart", () => {
-        if (mobileGalleryQuery.matches) {
-          prefetchDetailForWork(work);
-        }
-      }, { passive: true, once: true });
       card.addEventListener("click", (event) => {
         event.preventDefault();
 
-        if (mobileGalleryQuery.matches) {
+        if (window.matchMedia("(max-width: 640px)").matches) {
           window.location.href = card.href;
           return;
         }
@@ -505,36 +460,10 @@
         }, 320);
       });
       gallery.appendChild(card);
-
-      if (galleryObserver && image.dataset.src) {
-        galleryObserver.observe(image);
-      }
     });
-
-    function updateGalleryImageSources() {
-      Array.from(gallery.querySelectorAll("img")).forEach((image, index) => {
-        const work = works[index];
-        const nextSrc = mobileGalleryQuery.matches ? getMobileImageSrc(work.src) : getDesktopImageSrc(work.src);
-        const shouldDefer = mobileGalleryQuery.matches && index >= 2 && galleryObserver;
-
-        if (shouldDefer) {
-          image.removeAttribute("src");
-          image.dataset.loaded = "false";
-          image.dataset.src = nextSrc;
-          galleryObserver.observe(image);
-        } else if (image.getAttribute("src") !== nextSrc) {
-          image.dataset.src = nextSrc;
-          image.dataset.loaded = "false";
-          loadGalleryImage(image, nextSrc);
-        }
-      });
-
-      updateMasonryLayout();
-    }
 
     window.addEventListener("load", updateMasonryLayout);
     window.addEventListener("resize", updateMasonryLayout);
-    mobileGalleryQuery.addEventListener("change", updateGalleryImageSources);
   </script>
 </body>
 </html>
