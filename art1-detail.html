@@ -462,10 +462,7 @@
 
         <div class="art-stage">
           <div class="art-frame">
-            <picture>
-              <source id="art-image-webp" type="image/webp">
-              <img id="art-image" alt="">
-            </picture>
+            <img id="art-image" alt="">
           </div>
         </div>
       </div>
@@ -473,10 +470,89 @@
 
   </div>
 
-  <script src="artworks.js"></script>
   <script>
+    const works = [
+      {
+        title: "Chaotic Dream",
+        date: "2025",
+        image: "new/1.jpg",
+        alt: "Chaotic Dream",
+        description: "Born from my experience of Salmon Run, this piece reflects on the fragility of life and the relentless urge to survive in the face of inevitable death."
+      },
+      {
+        title: "Emergency Rescue",
+        date: "2025",
+        image: "new/2.jpg",
+        alt: "Emergency Rescue",
+        description: ""
+      },
+      {
+        title: "Decompostion",
+        date: "2025",
+        image: "new/3.jpg",
+        alt: "Decompostion",
+        description: "Set in a long-abandoned pool, this piece explores the subconscious through monsters dissecting fears I had not yet recognized"
+      },
+      {
+        title: "West absurdity",
+        date: "2023",
+        image: "new/4.jpg",
+        alt: "West absurdity",
+        description: "This piece explores my confusion and shifting beliefs as I moved from the Eastern to the Western country, questioning previously unwavering views on religion, culture and customs and reflecting the uncertainty of my own identity and the third space experience."
+      },
+      {
+        title: "Rumor",
+        date: "2022",
+        image: "new/5.jpg",
+        alt: "Rumor",
+        description: "A twisted word\n grows many hands.\n Faceless,\n it lives from mouth to mouth.\n Before truth steps in,\n echoes fill the house."
+      },
+      {
+        title: "Begging",
+        date: "2025",
+        image: "new/6.jpg",
+        alt: "Begging",
+        description: "This piece depicts the stark contrast between a homeless man in the subway and a tycoon hiding a corpse, reflecting social disparity and hidden darkness."
+      },
+      {
+        title: "Sushi Monster",
+        date: "2022",
+        image: "new/7.jpg",
+        alt: "Sushi Monster",
+        description: "This work reflects the high demands placed on kitchen labor in the restaurant industry, and the way capital shapes food pricing, presentation, and the values behind dining culture."
+      },
+      {
+        title: "Caged Bird",
+        date: "2023",
+        image: "new/8.jpg",
+        alt: "Caged Bird",
+        description: "After keeping parrots for several years, I began to question whether animals should live in cages. This work reflects my thoughts on animal rights, captivity, and the responsibility of the owner."
+      },
+      {
+        title: "Dream in the Fish Tank",
+        date: "2023",
+        image: "new/9.jpg",
+        alt: "Dream in the Fish Tank",
+        description: "A dream within a dream, exploring the judgment, tension, and self-examination of my inner desires."
+      },
+      {
+        title: "Pink Dream",
+        date: "2025",
+        image: "new/Untitled_Artwork 9.jpg",
+        alt: "Pink Dream",
+        description: "A dream-like work that explores lust, inner desire, fear, satisfaction, and the complex tension between these emotions."
+      },
+      {
+        title: "SuperEgo",
+        date: "2025",
+        image: "new/Untitled_Artwork 10.jpg",
+        alt: "SuperEgo",
+        description: "This work explores the role of the soul and spirit beyond the physical body, both within the inner self and in the outer world. Inspired by Conversations with God by Neale Donald Walsch, it reflects a sense of awe, worship, and fear toward higher dimensions of existence."
+      }
+    ];
+
     const viewer = document.querySelector(".viewer");
-    const artImageWebp = document.getElementById("art-image-webp");
+    const artStage = document.querySelector(".art-stage");
     const artImage = document.getElementById("art-image");
     const artTitle = document.getElementById("art-title");
     const artDescription = document.getElementById("art-description");
@@ -486,51 +562,29 @@
     const infoPanel = document.querySelector(".info-panel");
     const infoBottom = document.querySelector(".info-bottom");
     const params = new URLSearchParams(window.location.search);
-    const mobileDetailQuery = window.matchMedia("(max-width: 900px)");
+    const mobileDetailQuery = window.matchMedia("(max-width: 640px)");
     const parsedIndex = Number(params.get("work") || "1") - 1;
-    let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < ARTWORKS.length ? parsedIndex : 0;
+    let currentIndex = Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < works.length ? parsedIndex : 0;
     let isAnimatingMobileNext = false;
 
-    artImage.loading = "eager";
+    artImage.loading = "lazy";
     artImage.decoding = "async";
-    artImage.fetchPriority = "high";
+    artImage.fetchPriority = "auto";
 
-    function getDetailImageSrc(work) {
-      return getArtworkAssetPath(work, "largeMobile");
+    function getDetailImageSrc(src) {
+      return src.replace("new/", "new/detail-960/");
     }
 
-    function getDetailImageLargeSrc(work) {
-      return getArtworkAssetPath(work, "largeDesktop");
+    function getDetailImageLargeSrc(src) {
+      return src.replace("new/", "new/detail-1440/");
     }
 
-    function getDetailImageWebpSrcSet(work) {
-      return `${getArtworkAssetPath(work, "largeMobile", "webp")} 1200w, ${getArtworkAssetPath(work, "largeDesktop", "webp")} 1800w`;
-    }
-
-    function getDetailImageSrcSet(work) {
-      return `${getDetailImageSrc(work)} 1200w, ${getDetailImageLargeSrc(work)} 1800w`;
+    function getDetailImageSrcSet(src) {
+      return `${getDetailImageSrc(src)} 960w, ${getDetailImageLargeSrc(src)} 1440w`;
     }
 
     function getDetailImageSizes() {
-      return "(max-width: 900px) 100vw, 680px";
-    }
-
-    function preloadWork(workIndex) {
-      const work = ARTWORKS[workIndex];
-
-      if (!work) {
-        return Promise.resolve();
-      }
-
-      return new Promise((resolve) => {
-        const preloadImage = new Image();
-        preloadImage.decoding = "async";
-        preloadImage.sizes = getDetailImageSizes();
-        preloadImage.srcset = getDetailImageSrcSet(work);
-        preloadImage.src = getDetailImageSrc(work);
-        preloadImage.onload = resolve;
-        preloadImage.onerror = resolve;
-      });
+      return mobileDetailQuery.matches ? "100vw" : "(max-width: 900px) 100vw, 680px";
     }
 
     function resetMobileFlipClasses() {
@@ -553,36 +607,32 @@
     }
 
     function renderWork(workIndex) {
-      const work = ARTWORKS[workIndex];
-      const prevIndex = (workIndex - 1 + ARTWORKS.length) % ARTWORKS.length;
-      const nextIndex = (workIndex + 1) % ARTWORKS.length;
+      const work = works[workIndex];
+      const prevIndex = (workIndex - 1 + works.length) % works.length;
+      const nextIndex = (workIndex + 1) % works.length;
 
       document.title = `${work.title} | Mellissa Zhao`;
       artImage.alt = work.alt;
-      artImage.width = work.width;
-      artImage.height = work.height;
       artTitle.textContent = work.title;
       updateDescription(artDescription, work.description);
       artDate.textContent = work.date;
       prevButton.href = `art1-detail.html?work=${prevIndex + 1}`;
-      prevButton.setAttribute("aria-label", `Open ${ARTWORKS[prevIndex].title}`);
+      prevButton.setAttribute("aria-label", `Open ${works[prevIndex].title}`);
       nextButton.href = `art1-detail.html?work=${nextIndex + 1}`;
-      nextButton.setAttribute("aria-label", `Open ${ARTWORKS[nextIndex].title}`);
-      artImageWebp.sizes = getDetailImageSizes();
-      artImageWebp.srcset = getDetailImageWebpSrcSet(work);
+      nextButton.setAttribute("aria-label", `Open ${works[nextIndex].title}`);
       artImage.sizes = getDetailImageSizes();
-      artImage.srcset = getDetailImageSrcSet(work);
-      artImage.src = getDetailImageSrc(work);
+      artImage.srcset = getDetailImageSrcSet(work.image);
+      artImage.src = getDetailImageSrc(work.image);
     }
 
     renderWork(currentIndex);
 
     function getPrevIndex(workIndex) {
-      return (workIndex - 1 + ARTWORKS.length) % ARTWORKS.length;
+      return (workIndex - 1 + works.length) % works.length;
     }
 
     function getNextIndex(workIndex) {
-      return (workIndex + 1) % ARTWORKS.length;
+      return (workIndex + 1) % works.length;
     }
 
     function placeNextButton() {
