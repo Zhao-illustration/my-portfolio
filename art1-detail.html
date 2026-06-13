@@ -158,25 +158,12 @@
     }
 
     .prev-wrap {
-      position: fixed;
-      left: 24px;
-      bottom: 8px;
-      z-index: 40;
+      justify-content: flex-end;
     }
 
     .prev-wrap .next-label {
       font-size: 10px;
       letter-spacing: 0.1em;
-    }
-
-    .prev-wrap .next-button {
-      width: 48px;
-      height: 48px;
-    }
-
-    .prev-wrap .next-button svg {
-      width: 20px;
-      height: 20px;
     }
 
     .next-wrap {
@@ -355,29 +342,11 @@
       }
 
       .prev-wrap {
-        position: fixed;
-        left: 16px;
-        bottom: 8px;
+        position: static;
       }
 
       .prev-wrap .next-label {
         font-size: 9px;
-      }
-
-      .prev-wrap .next-button {
-        width: 42px;
-        height: 42px;
-      }
-
-      .prev-wrap .next-button svg {
-        width: 18px;
-        height: 18px;
-      }
-
-      .nav-wrap .next-wrap:last-child {
-        position: fixed;
-        right: 16px;
-        bottom: 24px;
       }
 
       .next-button {
@@ -436,9 +405,9 @@
 
           <div class="info-bottom">
             <div class="nav-wrap">
-              <div class="next-wrap prev-wrap">
-                <div class="next-label">Back</div>
-                <a class="next-button prev-button" id="prev-button" href="#" aria-label="Open previous artwork">
+              <div class="next-wrap">
+                <div class="next-label">Next work</div>
+                <a class="next-button" id="next-button" href="#" aria-label="Open next artwork">
                   <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M5 12h13"></path>
                     <path d="M12 5l7 7-7 7"></path>
@@ -446,9 +415,9 @@
                 </a>
               </div>
 
-              <div class="next-wrap">
-                <div class="next-label">Next work</div>
-                <a class="next-button" id="next-button" href="#" aria-label="Open next artwork">
+              <div class="next-wrap prev-wrap">
+                <div class="next-label">Back</div>
+                <a class="next-button prev-button" id="prev-button" href="#" aria-label="Open previous artwork">
                   <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M5 12h13"></path>
                     <path d="M12 5l7 7-7 7"></path>
@@ -472,6 +441,28 @@
 
   <script>
     const works = [
+      {
+        title: "The Night the Volcano Erupted",
+        date: "2026",
+        image: "new/night-volcano-erupted.jpg",
+        alt: "The Night the Volcano Erupted",
+        description: ""
+      },
+      {
+        title: "The Forgotten Valley",
+        date: "2026",
+        image: "new/forgotten-valley.jpg",
+        alt: "The Forgotten Valley",
+        description: `I closed my eyes and entered a dream, arriving in a place called the Valley of Sorrow.
+
+Its people were strange and unlike anyone I had seen before. A husband quietly fastened his wife to a cross, as though preparing for Christmas—or for a farewell no one could stop. Someone else had forgotten who they were. Another person sat inside a coffin filled with daisies, forced to eat a cake for his 101st birthday.
+
+At the highest point of the valley stood its youngest resident. Dazed and smoking endlessly, he held a guitar with broken strings. When I tried to wave to him, the entire valley began to sink. A slow melody drifted from far away, and everything—sweet, strange and sorrowful—disappeared into the wind, stones and grey dust.
+
+I began this painting after working in a long-term care home. At the time, entering such a place felt almost like being sent into this valley. The characters are playful and lovable, yet what they are experiencing is extreme and deeply sad. I wanted to capture that contradiction: bringing warmth and happiness to people while also watching them slowly fade.
+
+Sometimes the sadness of ageing, memory loss, life and death feels so overwhelming that it can only be expressed through exaggerated and almost absurd imagery. I first imagined this painting while working at the care home. Finishing it today feels like saying goodbye—to that part of my life, and to the residents I still remember.`
+      },
       {
         title: "Chaotic Dream",
         date: "2025",
